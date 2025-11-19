@@ -525,9 +525,6 @@ Contributions are welcome! Please follow these steps:
 - Follow the existing code style
 - Update documentation as needed
 
-## 📄 License
-
-This project is licensed under the MIT License.
 
 ## 🙏 Acknowledgments
 
@@ -542,6 +539,3 @@ This project is licensed under the MIT License.
 
 For issues, questions, or contributions, please open an issue on GitHub.
 
----
-
-Built with ❤️ using Next.js, Convex, Clerk, and Liveblocks
