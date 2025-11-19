@@ -26,7 +26,9 @@ interface VersionHistoryProps {
 
 export function VersionHistory({ documentId, documentTitle }: VersionHistoryProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const versions = useQuery(api.versions.getByDocumentId, { documentId });
+  // useQuery returns undefined on error or while loading - handle gracefully
+  const versionsResult = useQuery(api.versions.getByDocumentId, { documentId });
+  const versions = versionsResult ?? null; // Ensure versions is always defined
   const createVersion = useMutation(api.versions.create);
   const { editor } = useEditorStore();
 
@@ -46,7 +48,13 @@ export function VersionHistory({ documentId, documentTitle }: VersionHistoryProp
       });
       toast.success("Version created");
     } catch (error) {
-      toast.error("Failed to create version");
+      // Check if it's an authorization error
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes("Unauthorized") || errorMessage.includes("unauthorized")) {
+        toast.error("Permission denied: You don't have permission to create versions");
+      } else {
+        toast.error("Failed to create version");
+      }
     }
   };
 
@@ -92,7 +100,11 @@ export function VersionHistory({ documentId, documentTitle }: VersionHistoryProp
           </Button>
           <ScrollArea className="h-[400px] pr-4">
             <div className="space-y-2">
-              {versions && versions.length > 0 ? (
+              {versions === null ? (
+                <p className="text-center text-gray-500 py-8">
+                  Unable to load version history. You may not have permission to view versions.
+                </p>
+              ) : versions && versions.length > 0 ? (
                 versions.map((version) => (
                   <div
                     key={version._id}

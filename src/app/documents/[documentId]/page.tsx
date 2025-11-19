@@ -1,6 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
 import { preloadQuery } from "convex/nextjs";
-import { headers } from "next/headers";
 
 import { Document } from "./document";
 import { Id } from "../../../../convex/_generated/dataModel";
@@ -15,19 +14,16 @@ const DocumentIdPage = async ({ params, searchParams }: DocumentIdPageProps) => 
   const { documentId } = await params;
   const { token: shareToken } = await searchParams;
 
-  const { getToken } = await auth();
+  const { getToken, userId } = await auth();
   const convexToken = (await getToken({ template: "convex" })) ?? undefined;
 
-  // If there's a share token, validate it first
-  if (shareToken && !convexToken) {
-    // For share links without auth, we need to validate the token
-    // For now, we'll require authentication even for share links
-    // In a production app, you might want to create a guest session
-    throw new Error("Unauthorized - Please sign in to access this shared document");
-  }
-
-  if (!convexToken) {
-    throw new Error("Unauthorized");
+  // If user is not authenticated, return a placeholder
+  // The ConvexClientProvider will detect unauthenticated state and show SignIn
+  // The SignInWrapper will preserve the current URL (with token) for redirect after auth
+  if (!userId || !convexToken) {
+    // Return empty fragment - ConvexClientProvider will handle showing the sign-in
+    // The URL with token is preserved by SignInWrapper in ConvexClientProvider
+    return <></>;
   }
 
   const preloadedDocument = await preloadQuery(

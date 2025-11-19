@@ -69,7 +69,32 @@ export const getByDocumentId = query({
     );
 
     if (!isOwner && !isOrganizationMember) {
-      throw new ConvexError("Unauthorized");
+      // Check if user has any explicit permission (viewer, commenter, or editor)
+      const userPermission = await ctx.db
+        .query("permissions")
+        .withIndex("by_document_user", (q) =>
+          q.eq("documentId", args.documentId).eq("userId", user.subject)
+        )
+        .first();
+
+      if (!userPermission) {
+        // If no explicit permission, check if document has active share links
+        // This allows users accessing via share links to view versions
+        // (version history is read-only, so this is safe)
+        const shareLinks = await ctx.db
+          .query("shareLinks")
+          .withIndex("by_document_id", (q) => q.eq("documentId", args.documentId))
+          .collect();
+
+        // Check if any share link is active (not expired)
+        const hasActiveShareLink = shareLinks.some(
+          (link) => !link.expiresAt || link.expiresAt > Date.now()
+        );
+
+        if (!hasActiveShareLink) {
+          throw new ConvexError("Unauthorized");
+        }
+      }
     }
 
     const versions = await ctx.db
@@ -114,7 +139,32 @@ export const getById = query({
     );
 
     if (!isOwner && !isOrganizationMember) {
-      throw new ConvexError("Unauthorized");
+      // Check if user has any explicit permission (viewer, commenter, or editor)
+      const userPermission = await ctx.db
+        .query("permissions")
+        .withIndex("by_document_user", (q) =>
+          q.eq("documentId", version.documentId).eq("userId", user.subject)
+        )
+        .first();
+
+      if (!userPermission) {
+        // If no explicit permission, check if document has active share links
+        // This allows users accessing via share links to view versions
+        // (version history is read-only, so this is safe)
+        const shareLinks = await ctx.db
+          .query("shareLinks")
+          .withIndex("by_document_id", (q) => q.eq("documentId", version.documentId))
+          .collect();
+
+        // Check if any share link is active (not expired)
+        const hasActiveShareLink = shareLinks.some(
+          (link) => !link.expiresAt || link.expiresAt > Date.now()
+        );
+
+        if (!hasActiveShareLink) {
+          throw new ConvexError("Unauthorized");
+        }
+      }
     }
 
     return version;

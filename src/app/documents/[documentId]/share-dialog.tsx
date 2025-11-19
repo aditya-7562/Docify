@@ -83,14 +83,14 @@ export function ShareDialog({ documentId }: ShareDialogProps) {
           Share
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Share Document</DialogTitle>
           <DialogDescription>
             Share this document with others or create a shareable link
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-6">
+        <div className="space-y-6 overflow-y-auto flex-1 min-h-0 pr-1">
           {/* Create Share Link */}
           <div className="space-y-4">
             <h3 className="font-semibold">Create Share Link</h3>
@@ -136,23 +136,23 @@ export function ShareDialog({ documentId }: ShareDialogProps) {
                   return (
                     <div
                       key={link._id}
-                      className="flex items-center justify-between p-3 border rounded-lg"
+                      className="flex items-center justify-between gap-3 p-3 border rounded-lg"
                     >
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 min-w-0 overflow-hidden">
                         <div className="flex items-center gap-2">
                           <span className="font-medium capitalize">{link.role}</span>
                           {isExpired && (
                             <span className="text-xs text-red-500">Expired</span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 truncate">{url}</p>
+                        <p className="text-sm text-gray-500 truncate break-all">{url}</p>
                         {link.expiresAt && (
                           <p className="text-xs text-gray-400">
                             Expires: {format(new Date(link.expiresAt), "PPpp")}
                           </p>
                         )}
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         <Button
                           variant="ghost"
                           size="sm"
@@ -185,8 +185,8 @@ export function ShareDialog({ documentId }: ShareDialogProps) {
                     key={permission._id}
                     className="flex items-center justify-between p-3 border rounded-lg"
                   >
-                    <div>
-                      <p className="font-medium">User ID: {permission.userId}</p>
+                    <div className="flex-1 min-w-0 overflow-hidden">
+                      <p className="font-medium truncate">User ID: {permission.userId}</p>
                       <p className="text-sm text-gray-500 capitalize">{permission.role}</p>
                     </div>
                   </div>
