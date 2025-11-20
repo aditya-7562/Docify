@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, ErrorInfo, Component, ReactNode } from "react";
 import { useQuery, useMutation } from "convex/react";
+import { useSearchParams } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { format } from "date-fns";
@@ -24,9 +25,56 @@ interface VersionHistoryProps {
   documentTitle: string;
 }
 
-export function VersionHistory({ documentId, documentTitle }: VersionHistoryProps) {
+// Error boundary component to catch and handle errors gracefully
+class VersionHistoryErrorBoundary extends Component<
+  { children: ReactNode; shareToken: string | null },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode; shareToken: string | null }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Suppress the error from showing in the error overlay
+    console.warn("Version history error caught:", error.message);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="text-center py-8 space-y-2">
+          {this.props.shareToken ? (
+            <>
+              <p className="text-red-600 font-medium">Share link expired or deleted</p>
+              <p className="text-sm text-gray-500">
+                The share link you're using is no longer valid. Please contact the document owner for a new link.
+              </p>
+            </>
+          ) : (
+            <p className="text-gray-500">
+              Unable to load version history. You may not have permission to view versions.
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+function VersionHistoryContent({ documentId, documentTitle }: VersionHistoryProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const shareToken = searchParams.get("token");
+  
   // useQuery returns undefined on error or while loading - handle gracefully
+  // Convex will return undefined if there's an error, which we handle below
   const versionsResult = useQuery(api.versions.getByDocumentId, { documentId });
   const versions = versionsResult ?? null; // Ensure versions is always defined
   const createVersion = useMutation(api.versions.create);
@@ -101,10 +149,23 @@ export function VersionHistory({ documentId, documentTitle }: VersionHistoryProp
           <ScrollArea className="h-[400px] pr-4">
             <div className="space-y-2">
               {versions === null ? (
-                <p className="text-center text-gray-500 py-8">
-                  Unable to load version history. You may not have permission to view versions.
-                </p>
-              ) : versions && versions.length > 0 ? (
+                <div className="text-center py-8 space-y-2">
+                  {shareToken ? (
+                    <>
+                      <p className="text-red-600 font-medium">
+                        Share link expired or deleted
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        The share link you're using is no longer valid. Please contact the document owner for a new link.
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-gray-500">
+                      Unable to load version history. You may not have permission to view versions.
+                    </p>
+                  )}
+                </div>
+              ) : versions && Array.isArray(versions) && versions.length > 0 ? (
                 versions.map((version) => (
                   <div
                     key={version._id}
@@ -134,6 +195,15 @@ export function VersionHistory({ documentId, documentTitle }: VersionHistoryProp
                     </Button>
                   </div>
                 ))
+              ) : versions && Array.isArray(versions) && versions.length === 0 && shareToken ? (
+                <div className="text-center py-8 space-y-2">
+                  <p className="text-red-600 font-medium">
+                    Share link expired or deleted
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    The share link you're using is no longer valid. Please contact the document owner for a new link.
+                  </p>
+                </div>
               ) : (
                 <p className="text-center text-gray-500 py-8">No versions yet</p>
               )}
@@ -142,6 +212,17 @@ export function VersionHistory({ documentId, documentTitle }: VersionHistoryProp
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+export function VersionHistory({ documentId, documentTitle }: VersionHistoryProps) {
+  const searchParams = useSearchParams();
+  const shareToken = searchParams.get("token");
+
+  return (
+    <VersionHistoryErrorBoundary shareToken={shareToken}>
+      <VersionHistoryContent documentId={documentId} documentTitle={documentTitle} />
+    </VersionHistoryErrorBoundary>
   );
 }
 

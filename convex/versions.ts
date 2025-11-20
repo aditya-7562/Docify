@@ -91,8 +91,10 @@ export const getByDocumentId = query({
           (link) => !link.expiresAt || link.expiresAt > Date.now()
         );
 
+        // Instead of throwing, return empty array when share link is deleted/expired
+        // This prevents the error from crashing the UI
         if (!hasActiveShareLink) {
-          throw new ConvexError("Unauthorized");
+          return [];
         }
       }
     }
@@ -161,6 +163,8 @@ export const getById = query({
           (link) => !link.expiresAt || link.expiresAt > Date.now()
         );
 
+        // Instead of throwing, return null when share link is deleted/expired
+        // This prevents the error from crashing the UI
         if (!hasActiveShareLink) {
           throw new ConvexError("Unauthorized");
         }
