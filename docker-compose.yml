@@ -5,36 +5,28 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.convex.dev
-    working_dir: /app
-    volumes:
-      - ./:/app
-      - /app/node_modules
-    command: ["npx", "convex", "dev"]
+    env_file:
+      - .env.docker
+    command: ["npx", "convex", "dev", "--hostname", "0.0.0.0", "--port", "8787"]
     ports:
       - "8787:8787"
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-fs", "http://localhost:8787/"]
-      interval: 2s
-      timeout: 2s
+      interval: 5s
+      timeout: 3s
       retries: 20
 
   web:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    working_dir: /app
-    volumes:
-      - ./:/app
-      - /app/node_modules
+    env_file:
+      - .env.docker
+    command: ["npm", "run", "dev"]
     ports:
       - "3000:3000"
-    environment:
-      NEXT_PUBLIC_CONVEX_URL: "http://convex:8787"
-      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY}
-      NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY: ${NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY}
-      LIVEBLOCKS_SECRET_KEY: ${LIVEBLOCKS_SECRET_KEY}
+    restart: unless-stopped
     depends_on:
       convex:
         condition: service_healthy
-    command: ["npm", "run", "dev"]

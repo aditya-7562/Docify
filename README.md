@@ -324,6 +324,20 @@ npm run dev
 
 The application will be available at `http://localhost:3000`.
 
+## 🐳 GCP VM Dev Deployment (Docker Compose)
+
+For staging/testing on a single Compute Engine VM, use the provided Docker workflow:
+
+1. Copy `.env.docker.example` to `.env.docker` and fill in your Clerk & Liveblocks keys (keep `NEXT_PUBLIC_CONVEX_URL=http://convex:8787`).
+2. Build and start the stack with:
+   ```bash
+   docker compose build
+   docker compose up -d
+   ```
+3. Expose ports `3000` (Next.js dev) and `8787` (Convex dev) via firewall rules or a reverse proxy.
+
+See `docs/deployment/dev-gcp.md` for detailed VM provisioning, DNS/TLS, and operational notes.
+
 ## 📁 Project Structure
 
 ```

@@ -1,24 +1,22 @@
 # Development Dockerfile for Docify (Next.js only)
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Install runtime utilities needed during development
+# Useful utilities for troubleshooting inside the container
 RUN apk add --no-cache bash git curl
 
-# Copy dependency manifests first to leverage caching
+# Install dependencies once during build for remote dev deploys
 COPY package*.json ./
+RUN npm ci
 
-# Install ALL deps (dev + prod)
-RUN npm ci || npm install
-
-# Copy source code
+# Copy the full workspace so the image is self-contained
 COPY . .
 
-# Next.js development server port
+ENV NODE_ENV=development \
+    NEXT_TELEMETRY_DISABLED=1 \
+    CI=1
+
 EXPOSE 3000
 
-ENV NODE_ENV=development
-
-# Run Next.js dev server
 CMD ["npm", "run", "dev"]
