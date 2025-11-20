@@ -1,0 +1,76 @@
+# Node dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Output directories (Next.js & Convex)
+.next
+out
+dist
+build
+convex/.convex/
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+*.env
+
+# Local system files
+.DS_Store
+Thumbs.db
+
+# Docker-related
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile*
+.Dockerfile
+
+# Git & VCS
+.git
+.gitignore
+.gitattributes
+.gitlab
+.github
+
+# Logs
+*.log
+logs/
+*.pid
+*.seed
+
+# Editor cruft
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS / artifacts
+*.tgz
+*.zip
+*.tar
+*.gz
+
+# Testing & temp
+coverage
+jest-cache
+jest-*
+__tests__
+__mocks__
+*.test.js
+*.test.ts
+*.test.tsx
+tmp
+temp
+
+# Build cache & locks
+.cache
+.parcel-cache
+.next/cache
+
+# Ignore local data directories (if any)
+data/
+local/

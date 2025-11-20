@@ -1,0 +1,22 @@
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install required OS packages only once (not every container start)
+RUN apk add --no-cache bash curl
+
+# Copy only dependency manifests first (better caching)
+COPY package.json package-lock.json* ./
+
+# Install dev dependencies
+RUN npm ci || npm install
+
+# Copy the rest of the project (source files)
+COPY . .
+
+# Expose the Convex dev port
+EXPOSE 8787
+
+# Default command for local development
+CMD ["npx", "convex", "dev"]
