@@ -1,10 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { SearchInput } from "./search-input";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Building2Icon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Navbar = () => {
+  const { user } = useUser();
+  const organization = user?.organizationMemberships?.[0]?.organization;
+
   return (
     <header className="h-14 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 flex items-center justify-between shadow-sm">
       <div className="flex items-center gap-2 flex-shrink-0">
@@ -21,6 +28,14 @@ export const Navbar = () => {
       </div>
 
       <div className="flex items-center gap-3 flex-shrink-0">
+        {organization && (
+          <Link href="/organization">
+            <Button variant="ghost" size="sm" className="gap-2">
+              <Building2Icon className="w-4 h-4" />
+              <span className="hidden sm:inline">Organization</span>
+            </Button>
+          </Link>
+        )}
         <ThemeToggle />
         <UserButton />
       </div>

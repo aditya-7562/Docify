@@ -60,3 +60,125 @@ export async function getUsers(): Promise<UserResponse[]> {
     throw handleError(error, { function: "getUsers" });
   }
 }
+
+export async function getOrganizationName(organizationId: string | null | undefined): Promise<string | null> {
+  try {
+    if (!organizationId) {
+      return null;
+    }
+
+    const clerk = await clerkClient();
+    const organization = await clerk.organizations.getOrganization({ organizationId });
+    
+    return organization.name ?? null;
+  } catch (error) {
+    logger.error(error as Error, { function: "getOrganizationName", organizationId });
+    // Return null on error instead of throwing, so UI can still render
+    return null;
+  }
+}
+
+export interface OrganizationMember {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  role: string;
+}
+
+export async function getOrganizationMembers(organizationId: string): Promise<OrganizationMember[]> {
+  try {
+    const clerk = await clerkClient();
+    const { sessionClaims } = await auth();
+    
+    // Verify user has access to this organization
+    const typedSessionClaims = sessionClaims as ClerkSessionClaims | null;
+    const userOrgId = typedSessionClaims?.o?.id ?? typedSessionClaims?.org_id;
+    
+    if (userOrgId !== organizationId) {
+      throw new Error("Unauthorized: You don't have access to this organization");
+    }
+
+    // Get organization members
+    const members = await clerk.organizations.getOrganizationMembershipList({
+      organizationId,
+    });
+
+    // Get detailed user info for each member
+    const memberDetails: OrganizationMember[] = await Promise.all(
+      members.data.map(async (membership) => {
+        const user = await clerk.users.getUser(membership.publicUserData.userId);
+        return {
+          id: user.id,
+          name: user.fullName ?? user.primaryEmailAddress?.emailAddress ?? "Anonymous",
+          email: user.primaryEmailAddress?.emailAddress ?? "",
+          avatar: user.imageUrl ?? "",
+          role: membership.role,
+        };
+      })
+    );
+
+    return memberDetails;
+  } catch (error) {
+    logger.error(error as Error, { function: "getOrganizationMembers", organizationId });
+    throw handleError(error, { function: "getOrganizationMembers" });
+  }
+}
+
+export async function inviteToOrganization(organizationId: string, emailAddress: string): Promise<void> {
+  try {
+    const clerk = await clerkClient();
+    const { sessionClaims } = await auth();
+    
+    // Verify user has admin access to this organization
+    const typedSessionClaims = sessionClaims as ClerkSessionClaims | null;
+    const userOrgId = typedSessionClaims?.o?.id ?? typedSessionClaims?.org_id;
+    const userRole = typedSessionClaims?.o?.role;
+    
+    if (userOrgId !== organizationId) {
+      throw new Error("Unauthorized: You don't have access to this organization");
+    }
+    
+    if (userRole !== "org:admin" && userRole !== "admin") {
+      throw new Error("Unauthorized: Only organization admins can invite members");
+    }
+
+    // Create invitation
+    await clerk.organizations.createOrganizationInvitation({
+      organizationId,
+      emailAddress,
+    });
+  } catch (error) {
+    logger.error(error as Error, { function: "inviteToOrganization", organizationId, emailAddress });
+    throw handleError(error, { function: "inviteToOrganization" });
+  }
+}
+
+export async function removeFromOrganization(organizationId: string, userId: string): Promise<void> {
+  try {
+    const clerk = await clerkClient();
+    const { sessionClaims } = await auth();
+    
+    // Verify user has admin access to this organization
+    const typedSessionClaims = sessionClaims as ClerkSessionClaims | null;
+    const userOrgId = typedSessionClaims?.o?.id ?? typedSessionClaims?.org_id;
+    const userRole = typedSessionClaims?.o?.role;
+    
+    if (userOrgId !== organizationId) {
+      throw new Error("Unauthorized: You don't have access to this organization");
+    }
+    
+    if (userRole !== "org:admin" && userRole !== "admin") {
+      throw new Error("Unauthorized: Only organization admins can remove members");
+    }
+
+    // Remove member from organization
+    await clerk.organizations.deleteOrganizationMembership({
+      organizationId,
+      userId,
+    });
+  } catch (error) {
+    logger.error(error as Error, { function: "removeFromOrganization", organizationId, userId });
+    throw handleError(error, { function: "removeFromOrganization" });
+  }
+}

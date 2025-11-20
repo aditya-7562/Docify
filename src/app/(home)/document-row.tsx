@@ -1,3 +1,5 @@
+"use client";
+
 import { format } from "date-fns";
 import { SiGoogledocs } from "react-icons/si";
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -6,6 +8,8 @@ import { Doc } from "../../../convex/_generated/dataModel";
 import { Building2Icon, CircleUserIcon } from "lucide-react";
 import { DocumentMenu } from "./document-menu";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getOrganizationName } from "../documents/[documentId]/action";
 
 interface DocumentRowProps {
   document: Doc<"documents">;
@@ -13,6 +17,28 @@ interface DocumentRowProps {
 
 export const DocumentRow = ({ document }: DocumentRowProps) => {
   const router = useRouter();
+  const [organizationName, setOrganizationName] = useState<string | null>(null);
+  const [isLoadingOrg, setIsLoadingOrg] = useState(false);
+
+  useEffect(() => {
+    if (document.organizationId) {
+      setIsLoadingOrg(true);
+      getOrganizationName(document.organizationId)
+        .then((name) => {
+          setOrganizationName(name);
+        })
+        .catch(() => {
+          setOrganizationName(null);
+        })
+        .finally(() => {
+          setIsLoadingOrg(false);
+        });
+    }
+  }, [document.organizationId]);
+
+  const sharedText = document.organizationId
+    ? organizationName || (isLoadingOrg ? "Loading..." : "Organization")
+    : "Personal";
 
   return (
     <TableRow className="cursor-pointer" onClick={() => router.push(`/documents/${document._id}`)}>
@@ -26,7 +52,7 @@ export const DocumentRow = ({ document }: DocumentRowProps) => {
         ) : (
           <CircleUserIcon className="size-4" />
         )}
-        {document.organizationId ? "Organization" : "Personal"}
+        {sharedText}
       </TableCell>
       <TableCell className="text-muted-foreground hidden md:table-cell">
         {format(new Date(document._creationTime), "MMM dd, yyyy")}
