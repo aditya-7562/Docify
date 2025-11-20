@@ -10,10 +10,15 @@ import { Doc } from "../../../../convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
-import { FileTextIcon, Building2Icon } from "lucide-react";
+import { FileTextIcon, Building2Icon, Menu } from "lucide-react";
 import { useStatus } from "@liveblocks/react";
 import { useEffect, useState } from "react";
 import { getOrganizationName } from "./action";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { DocumentsSidebar } from "./documents-sidebar";
+import { CommandPalette } from "./command-palette";
 
 interface NavbarProps {
   data: Doc<"documents">;
@@ -22,6 +27,7 @@ interface NavbarProps {
 export const Navbar = ({ data }: NavbarProps) => {
   const { user } = useUser();
   const [organizationName, setOrganizationName] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const userPermission = useQuery(api.permissions.getUserPermission, { documentId: data._id });
   const canManageSharing =
@@ -44,33 +50,59 @@ export const Navbar = ({ data }: NavbarProps) => {
   }, [data.organizationId]);
 
   return (
-    <div className="h-16 border-b bg-white dark:bg-gray-900 px-6 flex items-center justify-between">
-      
-      {/* LEFT BLOCK */}
-      <div className="flex items-center gap-3 min-w-0 flex-none">
-        <FileTextIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" />
-        <DocumentInput title={data.title} id={data._id} />
-        {organizationName && (
-          <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap flex-shrink-0">
-            <Building2Icon className="w-3.5 h-3.5" />
-            <span>{organizationName}</span>
+    <>
+      <div className="h-16 border-b bg-white dark:bg-gray-900 px-6 flex items-center justify-between gap-4">
+        
+        {/* LEFT BLOCK */}
+        <div className="flex items-center gap-3 min-w-0 flex-1 overflow-hidden">
+          {/* Hamburger Menu */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 flex-shrink-0"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+
+          {/* Clickable Logo */}
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity">
+            <Image src={"/logo.svg"} alt="Docify" width={24} height={24} />
+            <span className="font-semibold text-base dark:text-white hidden sm:inline">Docify</span>
+          </Link>
+
+          <FileTextIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+          <div className="min-w-0 flex-1 max-w-md">
+            <DocumentInput title={data.title} id={data._id} />
           </div>
-        )}
-        <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap flex-shrink-0">
-          {savedText} · 1 min ago
-        </span>
+          {organizationName && (
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap flex-shrink-0 hidden lg:flex">
+              <Building2Icon className="w-3.5 h-3.5" />
+              <span>{organizationName}</span>
+            </div>
+          )}
+          <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap flex-shrink-0 hidden md:inline">
+            {savedText} · 1 min ago
+          </span>
+        </div>
+
+        {/* RIGHT BLOCK */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Avatars />
+          <Inbox />
+          <VersionHistory documentId={data._id} documentTitle={data.title} />
+          {canManageSharing && <ShareDialog documentId={data._id} />}
+          <UserButton />
+        </div>
+
       </div>
 
-      {/* RIGHT BLOCK */}
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <Avatars />
-        <Inbox />
-        <VersionHistory documentId={data._id} documentTitle={data.title} />
-        {canManageSharing && <ShareDialog documentId={data._id} />}
-        <UserButton />
-      </div>
+      {/* Sidebar */}
+      <DocumentsSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} currentDocument={data} />
 
-    </div>
+      {/* Command Palette */}
+      <CommandPalette />
+    </>
   );
 };
 

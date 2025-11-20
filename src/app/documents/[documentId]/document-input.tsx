@@ -62,7 +62,7 @@ export const DocumentInput = ({ title, id }: DocumentInputProps) => {
   return (
     <>
       {isEditing ? (
-        <form onSubmit={handleSubmit} className="relative flex-1 min-w-0">
+        <form onSubmit={handleSubmit} className="relative w-full min-w-0">
           <span className="invisible whitespace-pre px-1.5 text-xl font-medium">{value || " "}</span>
           <input
             ref={inputRef}
@@ -82,7 +82,7 @@ export const DocumentInput = ({ title, id }: DocumentInputProps) => {
           }}
           readOnly
           value={title}
-          className="text-xl font-medium bg-transparent focus:outline-none cursor-pointer px-1.5 -ml-1.5 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 rounded text-black dark:text-white flex-1 min-w-0"
+          className="text-xl font-medium bg-transparent focus:outline-none cursor-pointer px-1.5 -ml-1.5 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 rounded text-black dark:text-white w-full min-w-0 truncate"
         />
       )}
     </>
