@@ -3,6 +3,7 @@
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useEditorStore } from "@/store/use-editor-store";
+import { useUserRole } from "./user-role-context";
 
 // types
 import { type ColorResult, SketchPicker } from "react-color";
@@ -58,6 +59,7 @@ import {
 
 const LineHeightButton = () => {
   const { editor } = useEditorStore();
+  const { canEdit } = useUserRole();
 
   const lineHeights = [
     { label: "Default", value: "normal" },
@@ -70,7 +72,13 @@ const LineHeightButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm">
+        <button 
+          disabled={!canEdit}
+          className={cn(
+            "h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm",
+            !canEdit && "opacity-50 cursor-not-allowed"
+          )}
+        >
           <ListCollapseIcon className="size-4" />
         </button>
       </DropdownMenuTrigger>
@@ -78,10 +86,12 @@ const LineHeightButton = () => {
         {lineHeights.map(({ label, value }) => (
           <button
             key={value}
-            onClick={() => editor?.chain().focus().setLineHeight(value).run()}
+            onClick={() => canEdit && editor?.chain().focus().setLineHeight(value).run()}
+            disabled={!canEdit}
             className={cn(
               "flex items-center gap-x-2 px-2 py-1 rounded-sm hover:bg-neutral-200/80",
-              editor?.getAttributes("paragraph").lineHeight === value && "bg-neutral-200/80"
+              editor?.getAttributes("paragraph").lineHeight === value && "bg-neutral-200/80",
+              !canEdit && "opacity-50 cursor-not-allowed"
             )}
           >
             <span className="text-sm">{label}</span>
@@ -94,6 +104,7 @@ const LineHeightButton = () => {
 
 const FontSizeButton = () => {
   const { editor } = useEditorStore();
+  const { canEdit } = useUserRole();
 
   const currentFontSize = editor?.getAttributes("textStyle").fontSize
     ? editor?.getAttributes("textStyle").fontSize.replace("px", "")
@@ -145,7 +156,11 @@ const FontSizeButton = () => {
     <div className="flex items-center gap-x-0.5">
       <button
         onClick={decrement}
-        className="h-7 w-7 shrink-0 flex items-center justify-center rounded-sm hover:bg-neutral-200/80"
+        disabled={!canEdit}
+        className={cn(
+          "h-7 w-7 shrink-0 flex items-center justify-center rounded-sm hover:bg-neutral-200/80",
+          !canEdit && "opacity-50 cursor-not-allowed"
+        )}
       >
         <MinusIcon className="size-4" />
       </button>
@@ -156,22 +171,36 @@ const FontSizeButton = () => {
           onChange={handleInputChange}
           onBlur={handleInputBlur}
           onKeyDown={handleKeyDown}
-          className="h-7 w-10 text-sm text-center border border-neutral-400 rounded-sm bg-transparent focus:outline-none focus:ring-0"
+          disabled={!canEdit}
+          className={cn(
+            "h-7 w-10 text-sm text-center border border-neutral-400 rounded-sm bg-transparent focus:outline-none focus:ring-0",
+            !canEdit && "opacity-50 cursor-not-allowed"
+          )}
         />
       ) : (
         <button
           onClick={() => {
-            setIsEditing(true);
-            setFontSize(currentFontSize);
+            if (canEdit) {
+              setIsEditing(true);
+              setFontSize(currentFontSize);
+            }
           }}
-          className="h-7 w-10 text-sm text-center border border-neutral-400 rounded-sm bg-transparent cursor-text"
+          disabled={!canEdit}
+          className={cn(
+            "h-7 w-10 text-sm text-center border border-neutral-400 rounded-sm bg-transparent",
+            canEdit ? "cursor-text" : "opacity-50 cursor-not-allowed"
+          )}
         >
           {currentFontSize}
         </button>
       )}
       <button
         onClick={increment}
-        className="h-7 w-7 shrink-0 flex items-center justify-center rounded-sm hover:bg-neutral-200/80"
+        disabled={!canEdit}
+        className={cn(
+          "h-7 w-7 shrink-0 flex items-center justify-center rounded-sm hover:bg-neutral-200/80",
+          !canEdit && "opacity-50 cursor-not-allowed"
+        )}
       >
         <PlusIcon className="size-4" />
       </button>
@@ -181,6 +210,7 @@ const FontSizeButton = () => {
 
 const ListButton = () => {
   const { editor } = useEditorStore();
+  const { canEdit } = useUserRole();
 
   const lists = [
     {
@@ -200,7 +230,13 @@ const ListButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm">
+        <button 
+          disabled={!canEdit}
+          className={cn(
+            "h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm",
+            !canEdit && "opacity-50 cursor-not-allowed"
+          )}
+        >
           <ListIcon className="size-4" />
         </button>
       </DropdownMenuTrigger>
@@ -208,10 +244,12 @@ const ListButton = () => {
         {lists.map(({ label, icon: Icon, onClick, isActive }) => (
           <button
             key={label}
-            onClick={onClick}
+            onClick={() => canEdit && onClick()}
+            disabled={!canEdit}
             className={cn(
               "flex items-center gap-x-2 px-2 py-1 rounded-sm hover:bg-neutral-200/80",
-              isActive() && "bg-neutral-200/80"
+              isActive() && "bg-neutral-200/80",
+              !canEdit && "opacity-50 cursor-not-allowed"
             )}
           >
             <Icon className="size-4" />
@@ -225,6 +263,7 @@ const ListButton = () => {
 
 const AlignButton = () => {
   const { editor } = useEditorStore();
+  const { canEdit } = useUserRole();
 
   const alignments = [
     {
@@ -252,7 +291,13 @@ const AlignButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm">
+        <button 
+          disabled={!canEdit}
+          className={cn(
+            "h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm",
+            !canEdit && "opacity-50 cursor-not-allowed"
+          )}
+        >
           <AlignLeftIcon className="size-4" />
         </button>
       </DropdownMenuTrigger>
@@ -260,10 +305,12 @@ const AlignButton = () => {
         {alignments.map(({ label, value, icon: Icon }) => (
           <button
             key={value}
-            onClick={() => editor?.chain().focus().setTextAlign(value).run()}
+            onClick={() => canEdit && editor?.chain().focus().setTextAlign(value).run()}
+            disabled={!canEdit}
             className={cn(
               "flex items-center gap-x-2 px-2 py-1 rounded-sm hover:bg-neutral-200/80",
-              editor?.isActive({ textAlign: value }) && "bg-neutral-200/80"
+              editor?.isActive({ textAlign: value }) && "bg-neutral-200/80",
+              !canEdit && "opacity-50 cursor-not-allowed"
             )}
           >
             <Icon className="size-4" />
@@ -277,6 +324,7 @@ const AlignButton = () => {
 
 const ImageButton = () => {
   const { editor } = useEditorStore();
+  const { canEdit } = useUserRole();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
 
@@ -542,15 +590,18 @@ interface ToolbarButtonProps {
   onClick?: () => void;
   isActive?: boolean;
   icon: LucideIcon;
+  disabled?: boolean;
 }
 
-const ToolbarButton = ({ onClick, isActive, icon: Icon }: ToolbarButtonProps) => {
+const ToolbarButton = ({ onClick, isActive, icon: Icon, disabled }: ToolbarButtonProps) => {
   return (
     <button
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
       className={cn(
         "text-sm h-7 min-w-7 flex items-center justify-center rounded-sm hover:bg-neutral-200/80",
-        isActive && "bg-neutral-200/80"
+        isActive && "bg-neutral-200/80",
+        disabled && "opacity-50 cursor-not-allowed hover:bg-transparent"
       )}
     >
       <Icon className="size-4" />
@@ -560,19 +611,22 @@ const ToolbarButton = ({ onClick, isActive, icon: Icon }: ToolbarButtonProps) =>
 
 export const Toolbar = () => {
   const { editor } = useEditorStore();
+  const { canEdit, canComment } = useUserRole();
 
-  const sections: { label: string; icon: LucideIcon; onClick: () => void; isActive?: boolean }[][] =
+  const sections: { label: string; icon: LucideIcon; onClick: () => void; isActive?: boolean; disabled?: boolean }[][] =
     [
       [
         {
           label: "Undo",
           icon: Undo2Icon,
           onClick: () => editor?.chain().focus().undo().run(),
+          disabled: !canEdit,
         },
         {
           label: "Redo",
           icon: Redo2Icon,
           onClick: () => editor?.chain().focus().redo().run(),
+          disabled: !canEdit,
         },
         {
           label: "Print",
@@ -594,18 +648,21 @@ export const Toolbar = () => {
           icon: BoldIcon,
           isActive: editor?.isActive("bold"),
           onClick: () => editor?.chain().focus().toggleBold().run(),
+          disabled: !canEdit,
         },
         {
           label: "Italic",
           icon: ItalicIcon,
           isActive: editor?.isActive("italic"),
           onClick: () => editor?.chain().focus().toggleItalic().run(),
+          disabled: !canEdit,
         },
         {
           label: "Underline",
           icon: UnderlineIcon,
           isActive: editor?.isActive("underline"),
           onClick: () => editor?.chain().focus().toggleUnderline().run(),
+          disabled: !canEdit,
         },
       ],
       [
@@ -613,19 +670,22 @@ export const Toolbar = () => {
           label: "Comment",
           icon: MessageSquarePlusIcon,
           onClick: () => editor?.chain().focus().addPendingComment().run(),
-          isActive: editor?.isActive("liveblocksCommentMark"), 
+          isActive: editor?.isActive("liveblocksCommentMark"),
+          disabled: !canComment,
         },
         {
           label: "List Todo",
           icon: ListTodoIcon,
           onClick: () => editor?.chain().focus().toggleTaskList().run(),
           isActive: editor?.isActive("taskList"),
+          disabled: !canEdit,
         },
         {
           label: "Remove Formatting",
           icon: RemoveFormattingIcon,
           onClick: () => editor?.chain().focus().unsetAllMarks().run(),
           isActive: editor?.isActive("taskList"),
+          disabled: !canEdit,
         },
       ],
     ];

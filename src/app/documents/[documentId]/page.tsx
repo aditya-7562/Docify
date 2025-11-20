@@ -31,6 +31,7 @@ const DocumentIdPage = async ({ params, searchParams }: DocumentIdPageProps) => 
   }
 
   // If there's a share token, validate it FIRST before loading the document
+  let shareLinkRole: "viewer" | "commenter" | "editor" | null = null;
   if (shareToken) {
     try {
       const shareLink = await convex.query(
@@ -49,6 +50,9 @@ const DocumentIdPage = async ({ params, searchParams }: DocumentIdPageProps) => 
       if (shareLink.expiresAt && shareLink.expiresAt < Date.now()) {
         throw new Error("Share link has expired. Please contact the document owner for a new link.");
       }
+
+      // Store the role for later use
+      shareLinkRole = shareLink.role;
     } catch (error) {
       // Share link validation failed - throw error to show error page
       // This prevents the document from loading at all
@@ -100,7 +104,28 @@ const DocumentIdPage = async ({ params, searchParams }: DocumentIdPageProps) => 
     { token: convexToken }
   );
 
-  return <Document preloadedDocument={preloadedDocument} shareToken={shareToken} />;
+  // Determine user role: owner/org member = editor, otherwise use share link role
+  let userRole: "viewer" | "commenter" | "editor" = "editor";
+  if (!isOwner && !isOrganizationMember) {
+    if (shareLinkRole) {
+      userRole = shareLinkRole;
+    } else {
+      // Check explicit permissions
+      const userPermission = await convex.query(
+        api.permissions.getUserPermission,
+        { documentId },
+        { token: convexToken }
+      );
+      if (userPermission) {
+        userRole = userPermission.role;
+      } else {
+        // No permission found - should not reach here due to earlier check
+        userRole = "viewer";
+      }
+    }
+  }
+
+  return <Document preloadedDocument={preloadedDocument} shareToken={shareToken} userRole={userRole} />;
 };
 
 export default DocumentIdPage;

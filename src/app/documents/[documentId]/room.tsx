@@ -48,9 +48,18 @@ export function Room({ children, shareToken }: RoomProps) {
     const room = documentId;
     const token = shareToken || urlShareToken;
 
+    // Only include token in request body if it exists
+    const requestBody: { room: string; token?: string } = { room };
+    if (token) {
+      requestBody.token = token;
+    }
+
     const response = await fetch(endpoint, {
       method: "POST",
-      body: JSON.stringify({ room, token }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {

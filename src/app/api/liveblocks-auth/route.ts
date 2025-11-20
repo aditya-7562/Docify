@@ -23,7 +23,7 @@ const liveblocks = new Liveblocks({
 // Input validation schema
 const liveblocksAuthSchema = z.object({
   room: z.string().min(1, "Room ID is required"),
-  token: z.string().optional(),
+  token: z.string().optional().nullable(),
 });
 
 export async function POST(req: Request) {
@@ -49,6 +49,7 @@ export async function POST(req: Request) {
 
     const validationResult = liveblocksAuthSchema.safeParse(body);
     if (!validationResult.success) {
+      logger.warn("Validation failed", { body, errors: validationResult.error.errors });
       throw new ValidationError("Invalid request data", {
         errors: validationResult.error.errors,
       });
@@ -82,6 +83,7 @@ export async function POST(req: Request) {
 
     // Check share link if user is not owner or org member
     let hasShareLinkAccess = false;
+    let shareLinkRole: "viewer" | "commenter" | "editor" | null = null;
     if (!isOwner && !isOrganizationMember && token) {
       try {
         const shareLink = await convex.query(api.shareLinks.getByToken, { token });
@@ -89,6 +91,7 @@ export async function POST(req: Request) {
           // Check if expired
           if (!shareLink.expiresAt || shareLink.expiresAt > Date.now()) {
             hasShareLinkAccess = true;
+            shareLinkRole = shareLink.role;
           }
         }
       } catch (error) {
@@ -125,7 +128,23 @@ export async function POST(req: Request) {
       },
     });
 
-    session.allow(room, session.FULL_ACCESS);
+    // Grant permissions based on role
+    // Owner and org members get full access
+    // Share link users get access based on their role
+    if (isOwner || isOrganizationMember) {
+      session.allow(room, session.FULL_ACCESS);
+    } else if (shareLinkRole === "editor") {
+      session.allow(room, session.FULL_ACCESS);
+    } else if (shareLinkRole === "commenter") {
+      // Commenters can read, see presence, and write comments, but not edit the document
+      session.allow(room, ["room:read", "room:presence:write", "comments:write"] as const);
+    } else if (shareLinkRole === "viewer") {
+      // Viewers can only read (no editing, no commenting)
+      session.allow(room, session.READ_ACCESS);
+    } else {
+      // Default to read-only for safety
+      session.allow(room, session.READ_ACCESS);
+    }
 
     // Liveblocks expects raw body + status, NOT JSON wrapped
     const { body: responseBody, status } = await session.authorize();

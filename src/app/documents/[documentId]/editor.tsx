@@ -33,6 +33,7 @@ import { FontSizeExtensions } from "@/extensions/font-size";
 import { LineHeightExtension } from "@/extensions/line-height";
 import { Ruler } from "./ruler";
 import { Threads } from "./threads";
+import { useUserRole } from "./user-role-context";
 import { LEFT_MARGIN_DEFAULT, RIGHT_MARGIN_DEFAULT } from "@/constants/margins";
 
 interface EditorProps {
@@ -42,6 +43,7 @@ interface EditorProps {
 export const Editor = ({ initialContent }: EditorProps) => {
   const leftMargin = useStorage((root) => root.leftMargin) ?? LEFT_MARGIN_DEFAULT;
   const rightMargin = useStorage((root) => root.rightMargin) ?? RIGHT_MARGIN_DEFAULT;
+  const { canEdit } = useUserRole();
 
   const liveblocks = useLiveblocksExtension({
     initialContent,
@@ -51,6 +53,7 @@ export const Editor = ({ initialContent }: EditorProps) => {
 
   const editor = useEditor({
     immediatelyRender: false,
+    editable: canEdit,
     onCreate({ editor }) {
       setEditor(editor);
     },
