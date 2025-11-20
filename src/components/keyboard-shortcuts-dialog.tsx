@@ -19,9 +19,9 @@ interface KeyboardShortcutsDialogProps {
 export function KeyboardShortcutsDialog({ shortcuts }: KeyboardShortcutsDialogProps) {
   const formatKey = (shortcut: KeyboardShortcut): string => {
     const parts: string[] = [];
-    if (shortcut.ctrl || shortcut.meta) parts.push("⌘");
-    if (shortcut.shift) parts.push("⇧");
-    if (shortcut.alt) parts.push("⌥");
+    if (shortcut.ctrl || shortcut.meta) parts.push("Ctrl");
+    if (shortcut.shift) parts.push("Shift");
+    if (shortcut.alt) parts.push("Alt");
     parts.push(shortcut.key.toUpperCase());
     return parts.join(" + ");
   };

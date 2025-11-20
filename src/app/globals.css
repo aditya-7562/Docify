@@ -294,3 +294,22 @@ body {
 div[data-radix-popper-content-wrapper] {
   z-index: 50!important
 }
+
+/* Hide Next.js development overlay indicators */
+__next-build-watcher,
+nextjs-portal,
+#__next-build-watcher,
+[data-nextjs-dialog],
+[data-nextjs-toast],
+[data-nextjs-toast-container],
+.nextjs-toast-roots-parent {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Hide specific Next.js dev indicators */
+body > div[style*="position: fixed"][style*="z-index"]:has([data-nextjs-toast]),
+body > div:has([data-nextjs-toast]) {
+  display: none !important;
+}

@@ -96,15 +96,6 @@ export function EditorShortcuts({
       action: () => router.push("/"),
       description: "New Document",
     },
-    {
-      key: "/",
-      ctrl: true,
-      action: () => {
-        // This would open the shortcuts dialog - handled by parent
-        toast.info("Press Ctrl+/ to see all shortcuts");
-      },
-      description: "Show Shortcuts",
-    },
   ];
 
   useKeyboardShortcuts(shortcuts);
