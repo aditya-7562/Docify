@@ -30,14 +30,16 @@ const DocumentIdPage = async ({ params, searchParams }: DocumentIdPageProps) => 
     return <></>;
   }
 
+  // Set authentication token on the client
+  convex.setAuth(convexToken);
+
   // If there's a share token, validate it FIRST before loading the document
   let shareLinkRole: "viewer" | "commenter" | "editor" | null = null;
   if (shareToken) {
     try {
       const shareLink = await convex.query(
         api.shareLinks.getByToken,
-        { token: shareToken },
-        { token: convexToken }
+        { token: shareToken }
       );
 
       // Check if share link exists and is valid
@@ -66,8 +68,7 @@ const DocumentIdPage = async ({ params, searchParams }: DocumentIdPageProps) => 
   // Now get the document to check ownership (only if no share token or share token is valid)
   const document = await convex.query(
     api.documents.getById,
-    { id: documentId },
-    { token: convexToken }
+    { id: documentId }
   );
 
   if (!document) {
@@ -89,8 +90,7 @@ const DocumentIdPage = async ({ params, searchParams }: DocumentIdPageProps) => 
     // Check for explicit permissions
     const userPermission = await convex.query(
       api.permissions.getUserPermission,
-      { documentId },
-      { token: convexToken }
+      { documentId }
     );
 
     if (!userPermission) {
@@ -113,8 +113,7 @@ const DocumentIdPage = async ({ params, searchParams }: DocumentIdPageProps) => 
       // Check explicit permissions
       const userPermission = await convex.query(
         api.permissions.getUserPermission,
-        { documentId },
-        { token: convexToken }
+        { documentId }
       );
       if (userPermission) {
         userRole = userPermission.role;

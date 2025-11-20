@@ -8,6 +8,7 @@ import "./globals.css";
 
 import { Toaster } from "@/components/ui/sonner";
 import { ConvexClientProvider } from "@/components/convex-client-provider";
+import { Footer } from "@/components/footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,7 +30,10 @@ export default function RootLayout({
         <ConvexClientProvider>
           <NuqsAdapter>
             <Toaster />
-            {children}
+            <div className="min-h-screen flex flex-col">
+              {children}
+              <Footer />
+            </div>
           </NuqsAdapter>
         </ConvexClientProvider>
       </body>

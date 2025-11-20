@@ -60,34 +60,31 @@ export const DocumentInput = ({ title, id }: DocumentInputProps) => {
   const showError = status === "disconnected";
 
   return (
-    <div className="flex items-center gap-2">
+    <>
       {isEditing ? (
-        <form onSubmit={handleSubmit} className="relative w-fit max-w-[50ch]">
-          <span className="invisible whitespace-pre px-1.5 text-lg">{value || " "}</span>
+        <form onSubmit={handleSubmit} className="relative flex-1 min-w-0">
+          <span className="invisible whitespace-pre px-1.5 text-xl font-medium">{value || " "}</span>
           <input
             ref={inputRef}
             value={value}
             onChange={onChange}
             onBlur={() => setIsEditing(false)}
-            className="absolute inset-0 text-lg text-black px-1.5 bg-transparent truncate"
+            className="absolute inset-0 text-xl font-medium text-black dark:text-white px-1.5 bg-transparent focus:outline-none w-full"
           />
         </form>
       ) : (
-        <span
+        <input
           onClick={() => {
             setIsEditing(true);
             setTimeout(() => {
               inputRef.current?.focus();
             }, 0);
           }}
-          className="text-lg px-1.5 cursor-pointer truncate"
-        >
-          {title}
-        </span>
+          readOnly
+          value={title}
+          className="text-xl font-medium bg-transparent focus:outline-none cursor-pointer px-1.5 -ml-1.5 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 rounded text-black dark:text-white flex-1 min-w-0"
+        />
       )}
-      {showError && <BsCloudSlash className="size-4" />}
-      {!showError && !showLoader && <BsCloudCheck className="size-4" />}
-      {showLoader && <LoaderIcon className="size-4 animate-spin text-muted-foreground" />}
-    </div>
+    </>
   );
 };

@@ -19,7 +19,7 @@ export const DocumentRow = ({ document }: DocumentRowProps) => {
       <TableCell className="w-[50px]">
         <SiGoogledocs className="size-6 fill-blue-500" />
       </TableCell>
-      <TableCell className="font-medium md:w-[45%]">{document.title}</TableCell>
+      <TableCell className="font-medium md:w-[45%] text-gray-900 dark:text-white">{document.title}</TableCell>
       <TableCell className="text-muted-foreground hidden md:flex items-center gap-2">
         {document.organizationId ? (
           <Building2Icon className="size-4" />

@@ -1,3 +1,5 @@
+@import "../styles/tokens.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -265,15 +267,48 @@ body {
   }
 }
 
-/* For mobile */
+/* Thread layer isolation - fixes ghost card layering bug */
+.anchored-threads-layer {
+  position: relative;
+  z-index: 10;
+  isolation: isolate;
+}
 
-.floating-threads {
+.floating-threads-layer {
+  position: relative;
+  z-index: 20;
+  isolation: isolate;
+}
+
+.composer-layer {
+  position: relative;
+  z-index: 30;
+  isolation: isolate;
+}
+
+.floating-threads-layer > *,
+.anchored-threads-layer > * {
+  transform: translateZ(0); /* prevent shadow duplication */
+}
+
+/* Hide resolve buttons for threads not owned by current user */
+ [data-thread-owner="false"] button[data-resolve-button="true"],/* // TODO: Uncomment this when we have a way to hide the resolve button for threads not owned by the current user */
+/* [data-thread-owner="false"] button[aria-label*="Resolve"],
+[data-thread-owner="false"] button[aria-label*="resolve"],
+[data-thread-owner="false"] button[class*="resolve"],
+[data-thread-owner="false"] button[class*="Resolve"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+} */ 
+
+/* For mobile */
+.floating-threads-layer {
   display: none;
 }
 
 /* For desktop */
-
-.anchored-threads {
+.anchored-threads-layer {
   display: block;
   max-width: 300px;
   width: 100%;
@@ -282,14 +317,137 @@ body {
 }
 
 @media (max-width: 640px) {
-  .floating-threads {
+  .floating-threads-layer {
     display: block;
   }
 
-  .anchored-threads {
+  .anchored-threads-layer {
     display: none;
   }
 }
+
+/* Modern comment panel styling
+[data-liveblocks-thread],
+[class*="thread"],
+[class*="Thread"] {
+  animation: fadeIn 0.2s ease-out;
+} */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* 
+Style Liveblocks thread cards - more specific selectors
+.anchored-threads-layer [data-liveblocks-thread],
+.anchored-threads-layer [class*="thread"],
+.anchored-threads-layer [class*="Thread"] {
+  margin-bottom: 0.75rem !important;
+}
+
+.anchored-threads-layer [data-liveblocks-thread] > div,
+.anchored-threads-layer [class*="thread"] > div,
+.anchored-threads-layer [class*="Thread"] > div {
+  padding: 1rem !important;
+  background: white !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid var(--border) !important;
+  max-width: 24rem !important;
+  margin-bottom: 0.75rem !important;
+  position: relative !important;
+} */
+
+/* Dark mode support for threads
+.dark .anchored-threads-layer [data-liveblocks-thread] > div,
+.dark .anchored-threads-layer [class*="thread"] > div,
+.dark .anchored-threads-layer [class*="Thread"] > div {
+  background: rgb(31 41 55) !important;
+  border-color: rgb(55 65 81) !important;
+  color: white !important;
+} */
+
+/* Avatar styling
+.anchored-threads-layer [data-liveblocks-thread] [class*="avatar"],
+.anchored-threads-layer [class*="thread"] [class*="avatar"],
+.anchored-threads-layer [class*="Thread"] [class*="avatar"],
+.anchored-threads-layer img[class*="avatar"],
+.anchored-threads-layer [class*="Avatar"] {
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+  border-radius: 9999px !important;
+  flex-shrink: 0 !important;
+} */
+
+/* Custom thread card styling - can be used if needed */
+.lb-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid hsl(var(--border));
+  padding: 1rem;
+}
+
+.dark .lb-card {
+  background: rgb(31 41 55);
+  border-color: rgb(55 65 81);
+  color: white;
+}
+
+/* Author and header styling
+.anchored-threads-layer [data-liveblocks-thread] [class*="author"],
+.anchored-threads-layer [class*="thread"] [class*="author"],
+.anchored-threads-layer [class*="Thread"] [class*="author"],
+.anchored-threads-layer [class*="Author"] {
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  color: inherit !important;
+}
+
+/* Timestamp styling */
+/* .anchored-threads-layer [data-liveblocks-thread] [class*="timestamp"],
+.anchored-threads-layer [class*="thread"] [class*="timestamp"],
+.anchored-threads-layer [class*="Thread"] [class*="timestamp"],
+.anchored-threads-layer [class*="Timestamp"] {
+  font-size: 0.75rem !important;
+  color: var(--text-muted) !important;
+  opacity: 0.7 !important;
+}
+
+/* Content styling */
+/* .anchored-threads-layer [data-liveblocks-thread] [class*="content"],
+.anchored-threads-layer [class*="thread"] [class*="content"],
+.anchored-threads-layer [class*="Thread"] [class*="content"],
+.anchored-threads-layer [class*="Content"] {
+  font-size: 0.875rem !important;
+  color: inherit !important;
+  margin-top: 0.75rem !important;
+  line-height: 1.5 !important;
+} */ 
+
+/* Fix thread header layout */
+/* .anchored-threads-layer [data-liveblocks-thread] > div > div:first-child,
+.anchored-threads-layer [class*="thread"] > div > div:first-child {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Ensure proper spacing between threads */
+/* .anchored-threads-layer > * {
+  margin-bottom: 0.75rem !important;
+}
+
+.anchored-threads-layer > *:last-child {
+  margin-bottom: 0 !important;
+} */ 
 
 div[data-radix-popper-content-wrapper] {
   z-index: 50!important

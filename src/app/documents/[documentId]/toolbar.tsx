@@ -75,8 +75,8 @@ const LineHeightButton = () => {
         <button 
           disabled={!canEdit}
           className={cn(
-            "h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm",
-            !canEdit && "opacity-50 cursor-not-allowed"
+            "h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm transition-all hover:bg-primary-light active:scale-95 px-1.5 overflow-hidden text-sm",
+            !canEdit && "opacity-50 cursor-not-allowed hover:bg-transparent active:scale-100"
           )}
         >
           <ListCollapseIcon className="size-4" />
@@ -89,9 +89,9 @@ const LineHeightButton = () => {
             onClick={() => canEdit && editor?.chain().focus().setLineHeight(value).run()}
             disabled={!canEdit}
             className={cn(
-              "flex items-center gap-x-2 px-2 py-1 rounded-sm hover:bg-neutral-200/80",
-              editor?.getAttributes("paragraph").lineHeight === value && "bg-neutral-200/80",
-              !canEdit && "opacity-50 cursor-not-allowed"
+              "flex items-center gap-x-2 px-2 py-1 rounded-sm transition-all hover:bg-primary-light active:scale-95",
+              editor?.getAttributes("paragraph").lineHeight === value && "bg-primary-light",
+              !canEdit && "opacity-50 cursor-not-allowed hover:bg-transparent active:scale-100"
             )}
           >
             <span className="text-sm">{label}</span>
@@ -158,8 +158,8 @@ const FontSizeButton = () => {
         onClick={decrement}
         disabled={!canEdit}
         className={cn(
-          "h-7 w-7 shrink-0 flex items-center justify-center rounded-sm hover:bg-neutral-200/80",
-          !canEdit && "opacity-50 cursor-not-allowed"
+          "h-7 w-7 shrink-0 flex items-center justify-center rounded-sm transition-all hover:bg-primary-light active:scale-95",
+          !canEdit && "opacity-50 cursor-not-allowed hover:bg-transparent active:scale-100"
         )}
       >
         <MinusIcon className="size-4" />
@@ -198,8 +198,8 @@ const FontSizeButton = () => {
         onClick={increment}
         disabled={!canEdit}
         className={cn(
-          "h-7 w-7 shrink-0 flex items-center justify-center rounded-sm hover:bg-neutral-200/80",
-          !canEdit && "opacity-50 cursor-not-allowed"
+          "h-7 w-7 shrink-0 flex items-center justify-center rounded-sm transition-all hover:bg-primary-light active:scale-95",
+          !canEdit && "opacity-50 cursor-not-allowed hover:bg-transparent active:scale-100"
         )}
       >
         <PlusIcon className="size-4" />
@@ -233,8 +233,8 @@ const ListButton = () => {
         <button 
           disabled={!canEdit}
           className={cn(
-            "h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm",
-            !canEdit && "opacity-50 cursor-not-allowed"
+            "h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm transition-all hover:bg-primary-light active:scale-95 px-1.5 overflow-hidden text-sm",
+            !canEdit && "opacity-50 cursor-not-allowed hover:bg-transparent active:scale-100"
           )}
         >
           <ListIcon className="size-4" />
@@ -247,9 +247,9 @@ const ListButton = () => {
             onClick={() => canEdit && onClick()}
             disabled={!canEdit}
             className={cn(
-              "flex items-center gap-x-2 px-2 py-1 rounded-sm hover:bg-neutral-200/80",
-              isActive() && "bg-neutral-200/80",
-              !canEdit && "opacity-50 cursor-not-allowed"
+              "flex items-center gap-x-2 px-2 py-1 rounded-sm transition-all hover:bg-primary-light active:scale-95",
+              isActive() && "bg-primary-light",
+              !canEdit && "opacity-50 cursor-not-allowed hover:bg-transparent active:scale-100"
             )}
           >
             <Icon className="size-4" />
@@ -294,8 +294,8 @@ const AlignButton = () => {
         <button 
           disabled={!canEdit}
           className={cn(
-            "h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm",
-            !canEdit && "opacity-50 cursor-not-allowed"
+            "h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm transition-all hover:bg-primary-light active:scale-95 px-1.5 overflow-hidden text-sm",
+            !canEdit && "opacity-50 cursor-not-allowed hover:bg-transparent active:scale-100"
           )}
         >
           <AlignLeftIcon className="size-4" />
@@ -308,9 +308,9 @@ const AlignButton = () => {
             onClick={() => canEdit && editor?.chain().focus().setTextAlign(value).run()}
             disabled={!canEdit}
             className={cn(
-              "flex items-center gap-x-2 px-2 py-1 rounded-sm hover:bg-neutral-200/80",
-              editor?.isActive({ textAlign: value }) && "bg-neutral-200/80",
-              !canEdit && "opacity-50 cursor-not-allowed"
+              "flex items-center gap-x-2 px-2 py-1 rounded-sm transition-all hover:bg-primary-light active:scale-95",
+              editor?.isActive({ textAlign: value }) && "bg-primary-light",
+              !canEdit && "opacity-50 cursor-not-allowed hover:bg-transparent active:scale-100"
             )}
           >
             <Icon className="size-4" />
@@ -363,7 +363,7 @@ const ImageButton = () => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="h-7 min-w-7 shrink-0 flex items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm">
+          <button className="h-7 min-w-7 shrink-0 flex items-center justify-center rounded-sm transition-all hover:bg-primary-light active:scale-95 px-1.5 overflow-hidden text-sm">
             <ImageIcon className="size-4" />
           </button>
         </DropdownMenuTrigger>
@@ -423,7 +423,7 @@ const LinkButton = () => {
       }}
     >
       <DropdownMenuTrigger onClick={() => setValue(editor?.getAttributes("link").href)} asChild>
-        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm">
+        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm transition-all hover:bg-primary-light active:scale-95 px-1.5 overflow-hidden text-sm">
           <Link2Icon className="size-4" />
         </button>
       </DropdownMenuTrigger>
@@ -451,7 +451,7 @@ const HighlightColorButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm">
+        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm transition-all hover:bg-primary-light active:scale-95 px-1.5 overflow-hidden text-sm">
           <HighlighterIcon className="size-4" />
         </button>
       </DropdownMenuTrigger>
@@ -474,7 +474,7 @@ const TextColorButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm">
+        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm transition-all hover:bg-primary-light active:scale-95 px-1.5 overflow-hidden text-sm">
           <span className="text-xs">A</span>
           <div className="h-0.5 w-full" style={{ backgroundColor: value }}></div>
         </button>
@@ -511,7 +511,7 @@ const HeadingLevelButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="h-7 min-w-7 shrink-0 flex items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm">
+        <button className="h-7 min-w-7 shrink-0 flex items-center justify-center rounded-sm transition-all hover:bg-primary-light active:scale-95 px-1.5 overflow-hidden text-sm">
           <span className="truncate">{getCurrentHeading()}</span>
           <ChevronDownIcon className="ml-2 size-4 shrink-0" />
         </button>
@@ -522,9 +522,9 @@ const HeadingLevelButton = () => {
             key={value}
             style={{ fontSize }}
             className={cn(
-              "flex items-center gap-x-2 px-2 py-1 font-[value] rounded-sm hover:bg-neutral-200/80",
+              "flex items-center gap-x-2 px-2 py-1 font-[value] rounded-sm transition-all hover:bg-primary-light active:scale-95",
               (value === 0 && !editor?.isActive("heading")) ||
-                (editor?.isActive("heading", { level: value as Level }) && "bg-neutral-200/80")
+                (editor?.isActive("heading", { level: value as Level }) && "bg-primary-light")
             )}
             onClick={() => {
               if (value === 0) {
@@ -560,7 +560,7 @@ export const FontFamilyButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="h-7 w-[120px] shrink-0 flex items-center justify-between rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm">
+        <button className="h-7 w-[120px] shrink-0 flex items-center justify-between rounded-sm transition-all hover:bg-primary-light active:scale-95 px-1.5 overflow-hidden text-sm">
           <span className="truncate">
             {editor?.getAttributes("textStyle").fontFamily || "Arial"}
           </span>
@@ -573,8 +573,8 @@ export const FontFamilyButton = () => {
             onClick={() => editor?.chain().focus().setFontFamily(value).run()}
             key={value}
             className={cn(
-              "flex items-center gap-x-2 px-2 py-1 font-[value] rounded-sm hover:bg-neutral-200/80",
-              editor?.getAttributes("textStyle").fontFamily === value && "bg-neutral-200/80"
+              "flex items-center gap-x-2 px-2 py-1 font-[value] rounded-sm transition-all hover:bg-primary-light active:scale-95",
+              editor?.getAttributes("textStyle").fontFamily === value && "bg-primary-light"
             )}
             style={{ fontFamily: value }}
           >
@@ -599,9 +599,9 @@ const ToolbarButton = ({ onClick, isActive, icon: Icon, disabled }: ToolbarButto
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       className={cn(
-        "text-sm h-7 min-w-7 flex items-center justify-center rounded-sm hover:bg-neutral-200/80",
-        isActive && "bg-neutral-200/80",
-        disabled && "opacity-50 cursor-not-allowed hover:bg-transparent"
+        "text-sm h-7 min-w-7 flex items-center justify-center rounded-sm transition-all hover:bg-primary-light active:scale-95",
+        isActive && "bg-primary-light",
+        disabled && "opacity-50 cursor-not-allowed hover:bg-transparent active:scale-100"
       )}
     >
       <Icon className="size-4" />
@@ -609,113 +609,109 @@ const ToolbarButton = ({ onClick, isActive, icon: Icon, disabled }: ToolbarButto
   );
 };
 
-export const Toolbar = () => {
+// Toolbar Groups
+const UndoRedoGroup = () => {
   const { editor } = useEditorStore();
-  const { canEdit, canComment } = useUserRole();
-
-  const sections: { label: string; icon: LucideIcon; onClick: () => void; isActive?: boolean; disabled?: boolean }[][] =
-    [
-      [
-        {
-          label: "Undo",
-          icon: Undo2Icon,
-          onClick: () => editor?.chain().focus().undo().run(),
-          disabled: !canEdit,
-        },
-        {
-          label: "Redo",
-          icon: Redo2Icon,
-          onClick: () => editor?.chain().focus().redo().run(),
-          disabled: !canEdit,
-        },
-        {
-          label: "Print",
-          icon: PrinterIcon,
-          onClick: () => window.print(),
-        },
-        {
-          label: "Spell Check",
-          icon: SpellCheckIcon,
-          onClick: () => {
-            const current = editor?.view.dom.getAttribute("spellcheck");
-            editor?.view.dom.setAttribute("spellcheck", current === "false" ? "true" : "false");
-          },
-        },
-      ],
-      [
-        {
-          label: "Bold",
-          icon: BoldIcon,
-          isActive: editor?.isActive("bold"),
-          onClick: () => editor?.chain().focus().toggleBold().run(),
-          disabled: !canEdit,
-        },
-        {
-          label: "Italic",
-          icon: ItalicIcon,
-          isActive: editor?.isActive("italic"),
-          onClick: () => editor?.chain().focus().toggleItalic().run(),
-          disabled: !canEdit,
-        },
-        {
-          label: "Underline",
-          icon: UnderlineIcon,
-          isActive: editor?.isActive("underline"),
-          onClick: () => editor?.chain().focus().toggleUnderline().run(),
-          disabled: !canEdit,
-        },
-      ],
-      [
-        {
-          label: "Comment",
-          icon: MessageSquarePlusIcon,
-          onClick: () => editor?.chain().focus().addPendingComment().run(),
-          isActive: editor?.isActive("liveblocksCommentMark"),
-          disabled: !canComment,
-        },
-        {
-          label: "List Todo",
-          icon: ListTodoIcon,
-          onClick: () => editor?.chain().focus().toggleTaskList().run(),
-          isActive: editor?.isActive("taskList"),
-          disabled: !canEdit,
-        },
-        {
-          label: "Remove Formatting",
-          icon: RemoveFormattingIcon,
-          onClick: () => editor?.chain().focus().unsetAllMarks().run(),
-          isActive: editor?.isActive("taskList"),
-          disabled: !canEdit,
-        },
-      ],
-    ];
+  const { canEdit } = useUserRole();
 
   return (
-    <div className="bg-[#F1F4F9] px-2.5 py-0.5 rounded-[24px] min-h-[40px] flex items-center gap-x-0.5 overflow-x-auto">
-      {sections[0].map((item) => (
-        <ToolbarButton key={item.label} {...item} />
-      ))}
-      <Separator orientation="vertical" className="h-6 bg-neutral-300" />
+    <>
+      <ToolbarButton
+        icon={Undo2Icon}
+        onClick={() => editor?.chain().focus().undo().run()}
+        disabled={!canEdit}
+      />
+      <ToolbarButton
+        icon={Redo2Icon}
+        onClick={() => editor?.chain().focus().redo().run()}
+        disabled={!canEdit}
+      />
+    </>
+  );
+};
+
+const FontGroup = () => {
+  return (
+    <>
       <FontFamilyButton />
-      <Separator orientation="vertical" className="h-6 bg-neutral-300" />
       <HeadingLevelButton />
-      <Separator orientation="vertical" className="h-6 bg-neutral-300" />
       <FontSizeButton />
-      <Separator orientation="vertical" className="h-6 bg-neutral-300" />
-      {sections[1].map((item) => (
-        <ToolbarButton key={item.label} {...item} />
-      ))}
+    </>
+  );
+};
+
+const FormattingGroup = () => {
+  const { editor } = useEditorStore();
+  const { canEdit } = useUserRole();
+
+  return (
+    <>
+      <ToolbarButton
+        icon={BoldIcon}
+        isActive={editor?.isActive("bold")}
+        onClick={() => editor?.chain().focus().toggleBold().run()}
+        disabled={!canEdit}
+      />
+      <ToolbarButton
+        icon={ItalicIcon}
+        isActive={editor?.isActive("italic")}
+        onClick={() => editor?.chain().focus().toggleItalic().run()}
+        disabled={!canEdit}
+      />
+      <ToolbarButton
+        icon={UnderlineIcon}
+        isActive={editor?.isActive("underline")}
+        onClick={() => editor?.chain().focus().toggleUnderline().run()}
+        disabled={!canEdit}
+      />
       <TextColorButton />
       <HighlightColorButton />
-      <Separator orientation="vertical" className="h-6 bg-neutral-300" />
+    </>
+  );
+};
+
+const InsertGroup = () => {
+  const { editor } = useEditorStore();
+  const { canComment } = useUserRole();
+
+  return (
+    <>
+      <ToolbarButton
+        icon={MessageSquarePlusIcon}
+        onClick={() => editor?.chain().focus().addPendingComment().run()}
+        isActive={editor?.isActive("liveblocksCommentMark")}
+        disabled={!canComment}
+      />
       <LinkButton />
       <ImageButton />
+    </>
+  );
+};
+
+const AlignmentGroup = () => {
+  return (
+    <>
       <AlignButton />
       <LineHeightButton />
       <ListButton />
-      {sections[2].map((item) => (
-        <ToolbarButton key={item.label} {...item} />
-      ))}
+    </>
+  );
+};
+
+export const Toolbar = () => {
+  return (
+    <div className="sticky top-16 z-20 flex justify-center px-4 py-3 print:hidden">
+      <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur rounded-xl border dark:border-gray-700 shadow-md px-4 py-2 w-fit flex gap-2 items-center overflow-x-auto">
+        <UndoRedoGroup />
+        <Separator orientation="vertical" className="h-6 bg-neutral-300 dark:bg-gray-600" />
+        <FontGroup />
+        <Separator orientation="vertical" className="h-6 bg-neutral-300 dark:bg-gray-600" />
+        <FormattingGroup />
+        <Separator orientation="vertical" className="h-6 bg-neutral-300 dark:bg-gray-600" />
+        <InsertGroup />
+        <Separator orientation="vertical" className="h-6 bg-neutral-300 dark:bg-gray-600" />
+        <AlignmentGroup />
+      </div>
     </div>
   );
 };

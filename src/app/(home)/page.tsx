@@ -18,11 +18,11 @@ const Home = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="fixed top-0 left-0 right-0 z-10 h-16 bg-white p-4">
+    <div className="flex-1 flex flex-col bg-white dark:bg-gray-900">
+      <div className="fixed top-0 left-0 right-0 z-10">
         <Navbar />
       </div>
-      <div className="mt-16">
+      <div className="mt-14 flex-1">
         <TemplatesGallery />
         <DocumentsTable documents={results} loadMore={loadMore} status={status} />
       </div>

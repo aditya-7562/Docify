@@ -64,6 +64,8 @@ export default {
           bg: "#FAFBFD",
           border: "#C7C7C7"
         },
+        surface: "var(--surface)",
+        "primary-light": "var(--primary-light)",
       },
       borderRadius: {
         lg: "var(--radius)",

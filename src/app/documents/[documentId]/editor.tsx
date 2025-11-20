@@ -82,7 +82,7 @@ export const Editor = ({ initialContent }: EditorProps) => {
       attributes: {
         style: `padding-left: ${leftMargin}px; padding-right: ${rightMargin}px;`,
         class:
-          "focus:outline-none print:boder-0 border bg-white border-editor-border flex flex-col min-h-[1054px] w-[816px] pt-10 pr-14 pb-10 cursor-text",
+          "focus:outline-none print:border-0 border bg-white border-editor-border flex flex-col min-h-[1054px] w-full max-w-[816px] pt-10 pr-14 pb-10 cursor-text",
       },
     },
     extensions: [
@@ -122,11 +122,13 @@ export const Editor = ({ initialContent }: EditorProps) => {
   });
 
   return (
-    <div className="size-full overflow-x-auto bg-editor-bg px-4 print:p-0 print:bg-white print:overflow-visible">
-      <Ruler />
-      <div className="min-w-max flex justify-center w-[816px] py-4 print:py-0 mx-auto print:w-full print:min-w-0">
-        <EditorContent editor={editor} />
-        <Threads editor={editor} />
+    <div className="flex justify-center bg-surface dark:bg-gray-900 p-6 pb-20 print:p-0 print:bg-white print:pb-0">
+      <div className="bg-white dark:bg-gray-800 w-full max-w-[816px] min-h-[1100px] p-12 rounded-xl shadow-[0_0_50px_-20px_rgba(0,0,0,0.15)] dark:shadow-[0_0_50px_-20px_rgba(0,0,0,0.5)] border dark:border-gray-700 transition-transform duration-200 print:shadow-none print:rounded-none print:border-0 print:w-full print:min-h-0">
+        <Ruler />
+        <div className="w-full py-2 print:py-0">
+          <EditorContent editor={editor} />
+          <Threads editor={editor} />
+        </div>
       </div>
     </div>
   );
