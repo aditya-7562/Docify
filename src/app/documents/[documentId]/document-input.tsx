@@ -1,16 +1,13 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { BsCloudCheck, BsCloudSlash } from "react-icons/bs";
 
 import { useMutation } from "convex/react";
-import { useStatus } from "@liveblocks/react";
 import { useDebounce } from "@/hooks/use-debounce";
 
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
-import { LoaderIcon } from "lucide-react";
 
 interface DocumentInputProps {
   title: string;
@@ -18,10 +15,7 @@ interface DocumentInputProps {
 }
 
 export const DocumentInput = ({ title, id }: DocumentInputProps) => {
-  const status = useStatus();
-
   const [value, setValue] = useState(title);
-  const [isPending, setIsPending] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -30,24 +24,20 @@ export const DocumentInput = ({ title, id }: DocumentInputProps) => {
   const debouncedUpdate = useDebounce((newValue: string) => {
     if (newValue === title) return;
 
-    setIsPending(true);
     mutate({ id, title: newValue })
       .then(() => toast.success("Document updated"))
-      .catch(() => toast.error("Sometimes went wrong"))
-      .finally(() => setIsPending(false));
+      .catch(() => toast.error("Sometimes went wrong"));
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setIsPending(true);
     mutate({ id, title: value })
       .then(() => {
         toast.success("Document updated");
         setIsEditing(false);
       })
-      .catch(() => toast.error("Sometimes went wrong"))
-      .finally(() => setIsPending(false));
+      .catch(() => toast.error("Sometimes went wrong"));
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,9 +45,6 @@ export const DocumentInput = ({ title, id }: DocumentInputProps) => {
     setValue(newValue);
     debouncedUpdate(newValue);
   };
-
-  const showLoader = isPending || status === "connecting" || status === "reconnecting";
-  const showError = status === "disconnected";
 
   return (
     <>

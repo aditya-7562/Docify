@@ -13,13 +13,9 @@ import { type Level } from "@tiptap/extension-heading";
 import {
   BoldIcon,
   ItalicIcon,
-  ListTodoIcon,
   LucideIcon,
   MessageSquarePlusIcon,
-  PrinterIcon,
   Redo2Icon,
-  RemoveFormattingIcon,
-  SpellCheckIcon,
   UnderlineIcon,
   Undo2Icon,
   ChevronDownIcon,
@@ -328,13 +324,12 @@ const ImageButton = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
 
-  console.log(editor?.getAttributes("link").href, "TEST");
-
   const onChange = (src: string) => {
     editor?.chain().focus().setImage({ src }).run();
   };
 
   const onUpload = () => {
+    if (!canEdit) return;
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
@@ -352,6 +347,7 @@ const ImageButton = () => {
   };
 
   const handleImageUrlSubmit = () => {
+    if (!canEdit) return;
     if (imageUrl) {
       onChange(imageUrl);
       setImageUrl("");
@@ -363,7 +359,13 @@ const ImageButton = () => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="h-7 min-w-7 shrink-0 flex items-center justify-center rounded-sm transition-all hover:bg-primary-light active:scale-95 px-1.5 overflow-hidden text-sm">
+          <button
+            disabled={!canEdit}
+            className={cn(
+              "h-7 min-w-7 shrink-0 flex items-center justify-center rounded-sm transition-all hover:bg-primary-light active:scale-95 px-1.5 overflow-hidden text-sm",
+              !canEdit && "opacity-50 cursor-not-allowed hover:bg-transparent active:scale-100"
+            )}
+          >
             <ImageIcon className="size-4" />
           </button>
         </DropdownMenuTrigger>
@@ -372,14 +374,17 @@ const ImageButton = () => {
             <UploadIcon className="size-4 mr-2" />
             Upload
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsDialogOpen(true)} className="cursor-pointer">
+          <DropdownMenuItem
+            onClick={() => canEdit && setIsDialogOpen(true)}
+            className="cursor-pointer"
+          >
             <SearchIcon className="size-4 mr-2" />
             Paste image url
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen && canEdit} onOpenChange={(open) => canEdit && setIsDialogOpen(open)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Insert image URL</DialogTitle>
@@ -406,8 +411,6 @@ const ImageButton = () => {
 const LinkButton = () => {
   const { editor } = useEditorStore();
   const [value, setValue] = useState("");
-
-  console.log(editor?.getAttributes("link").href, "TEST");
 
   const onChange = (href: string) => {
     editor?.chain().focus().extendMarkRange("link").setLink({ href }).run();

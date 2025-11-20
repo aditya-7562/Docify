@@ -1,9 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-/**
- * Create a shareable link for a document
- */
+
 export const create = mutation({
   args: {
     documentId: v.id("documents"),
@@ -17,7 +15,6 @@ export const create = mutation({
       throw new ConvexError("Unauthorized");
     }
 
-    // Verify user has permission to create share links
     const document = await ctx.db.get(args.documentId);
     if (!document) {
       throw new ConvexError("Document not found");
@@ -33,10 +30,8 @@ export const create = mutation({
       throw new ConvexError("Unauthorized");
     }
 
-    // Generate unique token (using timestamp + random for uniqueness)
     const token = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
 
-    // Calculate expiration if provided
     const expiresAt = args.expiresInDays
       ? Date.now() + args.expiresInDays * 24 * 60 * 60 * 1000
       : undefined;
@@ -51,9 +46,7 @@ export const create = mutation({
   },
 });
 
-/**
- * Get share link by token
- */
+
 export const getByToken = query({
   args: { token: v.string() },
   handler: async (ctx, args) => {
@@ -66,7 +59,6 @@ export const getByToken = query({
       return null;
     }
 
-    // Check if expired
     if (shareLink.expiresAt && shareLink.expiresAt < Date.now()) {
       return null;
     }
@@ -75,9 +67,7 @@ export const getByToken = query({
   },
 });
 
-/**
- * Get all share links for a document
- */
+
 export const getByDocumentId = query({
   args: { documentId: v.id("documents") },
   handler: async (ctx, args) => {
@@ -87,7 +77,6 @@ export const getByDocumentId = query({
       throw new ConvexError("Unauthorized");
     }
 
-    // Verify user has access to the document
     const document = await ctx.db.get(args.documentId);
     if (!document) {
       throw new ConvexError("Document not found");
@@ -110,9 +99,6 @@ export const getByDocumentId = query({
   },
 });
 
-/**
- * Delete a share link
- */
 export const remove = mutation({
   args: { id: v.id("shareLinks") },
   handler: async (ctx, args) => {
@@ -127,7 +113,6 @@ export const remove = mutation({
       throw new ConvexError("Share link not found");
     }
 
-    // Verify user has permission
     const document = await ctx.db.get(shareLink.documentId);
     if (!document) {
       throw new ConvexError("Document not found");

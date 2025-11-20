@@ -4,9 +4,7 @@ import { Id } from "./_generated/dataModel";
 
 export type PermissionRole = "viewer" | "commenter" | "editor";
 
-/**
- * Grant permission to a user for a document
- */
+
 export const grant = mutation({
   args: {
     documentId: v.id("documents"),
@@ -20,7 +18,6 @@ export const grant = mutation({
       throw new ConvexError("Unauthorized");
     }
 
-    // Verify user has permission to grant access (must be owner or editor)
     const document = await ctx.db.get(args.documentId);
     if (!document) {
       throw new ConvexError("Document not found");
@@ -33,7 +30,7 @@ export const grant = mutation({
     );
 
     if (!isOwner && !isOrganizationMember) {
-      // Check if user has editor permission
+
       const existingPermission = await ctx.db
         .query("permissions")
         .withIndex("by_document_user", (q) =>
@@ -46,7 +43,7 @@ export const grant = mutation({
       }
     }
 
-    // Check if permission already exists
+
     const existing = await ctx.db
       .query("permissions")
       .withIndex("by_document_user", (q) =>
@@ -55,11 +52,11 @@ export const grant = mutation({
       .first();
 
     if (existing) {
-      // Update existing permission
+
       return await ctx.db.patch(existing._id, { role: args.role });
     }
 
-    // Create new permission
+
     return await ctx.db.insert("permissions", {
       documentId: args.documentId,
       userId: args.userId,
@@ -68,9 +65,7 @@ export const grant = mutation({
   },
 });
 
-/**
- * Revoke permission from a user
- */
+
 export const revoke = mutation({
   args: {
     documentId: v.id("documents"),
@@ -83,7 +78,6 @@ export const revoke = mutation({
       throw new ConvexError("Unauthorized");
     }
 
-    // Verify user has permission to revoke access
     const document = await ctx.db.get(args.documentId);
     if (!document) {
       throw new ConvexError("Document not found");
@@ -112,9 +106,7 @@ export const revoke = mutation({
   },
 });
 
-/**
- * Get all permissions for a document
- */
+
 export const getByDocumentId = query({
   args: { documentId: v.id("documents") },
   handler: async (ctx, args) => {
@@ -124,7 +116,6 @@ export const getByDocumentId = query({
       throw new ConvexError("Unauthorized");
     }
 
-    // Verify user has access to the document
     const document = await ctx.db.get(args.documentId);
     if (!document) {
       throw new ConvexError("Document not found");
@@ -137,7 +128,7 @@ export const getByDocumentId = query({
     );
 
     if (!isOwner && !isOrganizationMember) {
-      // Check if user has any permission
+
       const userPermission = await ctx.db
         .query("permissions")
         .withIndex("by_document_user", (q) =>
@@ -157,9 +148,7 @@ export const getByDocumentId = query({
   },
 });
 
-/**
- * Get user's permission for a document
- */
+
 export const getUserPermission = query({
   args: { documentId: v.id("documents") },
   handler: async (ctx, args) => {
@@ -174,18 +163,16 @@ export const getUserPermission = query({
       return null;
     }
 
-    // Owner has editor permission
     if (document.ownerId === user.subject) {
       return { role: "editor" as PermissionRole, isOwner: true };
     }
 
-    // Organization members have editor permission
     const organizationId = (user.organization_id ?? undefined) as string | undefined;
     if (document.organizationId && document.organizationId === organizationId) {
       return { role: "editor" as PermissionRole, isOwner: false };
     }
 
-    // Check explicit permissions
+
     const permission = await ctx.db
       .query("permissions")
       .withIndex("by_document_user", (q) =>

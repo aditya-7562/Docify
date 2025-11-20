@@ -11,12 +11,16 @@ Use this guide to run the Docify stack on a single Compute Engine VM using the e
 
 ## 2. Environment variables
 
-1. Copy the template and fill in real values (never commit the filled file):
-   ```bash
-   cp .env.docker.example .env.docker
-   ```
+1. Create `.env.docker` (use `.env.local` as a reference if you already set up local dev) and keep it out of version control.
 2. Ensure `NEXT_PUBLIC_CONVEX_URL=http://convex:8787` so the web container talks to the Convex service on the internal Docker network.
 3. Store Clerk and Liveblocks keys in the same file. Docker Compose will mount them into both containers automatically via the `env_file` setting.
+   ```env
+   NEXT_PUBLIC_CONVEX_URL=http://convex:8787
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your-clerk-publishable-key
+   CLERK_SECRET_KEY=your-clerk-secret-key
+   LIVEBLOCKS_SECRET_KEY=your-liveblocks-secret-key
+   NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY=your-liveblocks-public-key
+   ```
 
 ## 3. Build & run containers
 

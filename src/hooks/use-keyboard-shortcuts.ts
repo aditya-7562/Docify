@@ -10,20 +10,16 @@ export interface KeyboardShortcut {
   description: string;
 }
 
-/**
- * Hook for managing keyboard shortcuts
- * Handles shortcuts globally, including when editor is focused
- */
+
 export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Check if the event target is a regular input or textarea (not the editor)
+
       const target = event.target as HTMLElement;
       const isRegularInput = 
         (target.tagName === 'INPUT' && target.getAttribute('type') !== 'text') || 
         target.tagName === 'TEXTAREA';
 
-      // Skip shortcuts when typing in regular inputs (but allow in editor)
       if (isRegularInput) {
         return;
       }
@@ -43,7 +39,6 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
       }
     };
 
-    // Use capture phase to catch events before TipTap
     window.addEventListener("keydown", handleKeyDown, true);
     return () => window.removeEventListener("keydown", handleKeyDown, true);
   }, [shortcuts]);

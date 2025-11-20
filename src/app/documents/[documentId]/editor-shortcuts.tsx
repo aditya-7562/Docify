@@ -4,21 +4,13 @@ import { useEditorStore } from "@/store/use-editor-store";
 import { useKeyboardShortcuts, KeyboardShortcut } from "@/hooks/use-keyboard-shortcuts";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { exportToMarkdown, exportToHTML, exportToJSON, downloadFile } from "@/lib/export";
+import { exportToMarkdown, exportToHTML, downloadFile } from "@/lib/export";
 
 interface EditorShortcutsProps {
   documentTitle: string;
-  onSaveMarkdown?: () => void;
-  onSaveHTML?: () => void;
-  onSaveJSON?: () => void;
 }
 
-export function EditorShortcuts({
-  documentTitle,
-  onSaveMarkdown,
-  onSaveHTML,
-  onSaveJSON,
-}: EditorShortcutsProps) {
+export function EditorShortcuts({ documentTitle }: EditorShortcutsProps) {
   const { editor } = useEditorStore();
   const router = useRouter();
 

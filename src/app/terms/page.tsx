@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/app/(home)/navbar";
@@ -17,19 +17,23 @@ export default function TermsOfService() {
   const [activeSection, setActiveSection] = useState<string>("");
   const [isMobileTOCOpen, setIsMobileTOCOpen] = useState(false);
 
-  const sections = [
-    { id: "intro", title: "Introduction" },
-    { id: "using-docify", title: "Using Docify" },
-    { id: "your-content", title: "Your Content" },
-    { id: "collaboration", title: "Collaboration Features" },
-    { id: "acceptable-use", title: "Acceptable Use" },
-    { id: "availability", title: "Service Availability" },
-    { id: "liability", title: "Limitations of Liability" },
-    { id: "termination", title: "Account Termination" },
-    { id: "law", title: "Governing Law" },
-    { id: "changes", title: "Changes to Terms" },
-    { id: "contact", title: "Contact Us" },
-  ];
+type TocSection = { id: string; title: string };
+
+const TERMS_SECTIONS: TocSection[] = [
+  { id: "intro", title: "Introduction" },
+  { id: "using-docify", title: "Using Docify" },
+  { id: "your-content", title: "Your Content" },
+  { id: "collaboration", title: "Collaboration Features" },
+  { id: "acceptable-use", title: "Acceptable Use" },
+  { id: "availability", title: "Service Availability" },
+  { id: "liability", title: "Limitations of Liability" },
+  { id: "termination", title: "Account Termination" },
+  { id: "law", title: "Governing Law" },
+  { id: "changes", title: "Changes to Terms" },
+  { id: "contact", title: "Contact Us" },
+];
+
+  const sections = TERMS_SECTIONS;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,7 +51,7 @@ export default function TermsOfService() {
     window.addEventListener("scroll", handleScroll);
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [sections]);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -132,7 +136,13 @@ function TermsSidebarTOC({
   scrollToSection,
   isMobileTOCOpen,
   setIsMobileTOCOpen,
-}: any) {
+}: {
+  sections: TocSection[];
+  activeSection: string;
+  scrollToSection: (id: string) => void;
+  isMobileTOCOpen: boolean;
+  setIsMobileTOCOpen: (open: boolean) => void;
+}) {
   return (
     <>
       <div className="lg:hidden mb-6">
@@ -155,7 +165,7 @@ function TermsSidebarTOC({
             <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 px-3">
               Contents
             </div>
-            {sections.map((section: any) => (
+            {sections.map((section) => (
               <button
                 key={section.id}
                 onClick={() => scrollToSection(section.id)}
@@ -177,7 +187,7 @@ function TermsSidebarTOC({
       {isMobileTOCOpen && (
         <div className="lg:hidden mb-6 border border-gray-200 dark:border-gray-800 rounded-lg p-4 transition-all duration-200">
           <nav className="space-y-1">
-            {sections.map((section: any) => (
+            {sections.map((section) => (
               <button
                 key={section.id}
                 onClick={() => scrollToSection(section.id)}
@@ -202,11 +212,9 @@ function TermsSidebarTOC({
 function TermsContent() {
   return (
     <article className="prose prose-gray dark:prose-invert max-w-none">
-
-      {/* INTRO */}
       <section id="intro" className="mb-16 scroll-mt-24">
         <p className="text-lg text-gray-700 dark:text-gray-300">
-          These Terms govern your access to and use of Docify ("we", "our", "us").
+          These Terms govern your access to and use of Docify (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;).
         </p>
         <p className="text-gray-700 dark:text-gray-300 mt-3">
           By using Docify, you agree to these Terms.
@@ -215,7 +223,6 @@ function TermsContent() {
 
       <Divider />
 
-      {/* USING DOCIFY */}
       <section id="using-docify" className="mb-16 scroll-mt-24">
         <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Using Docify</h2>
 
@@ -235,7 +242,6 @@ function TermsContent() {
 
       <Divider />
 
-      {/* YOUR CONTENT */}
       <section id="your-content" className="mb-16 scroll-mt-24">
         <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Your Content</h2>
 
@@ -260,7 +266,6 @@ function TermsContent() {
 
       <Divider />
 
-      {/* COLLABORATION */}
       <section id="collaboration" className="mb-16 scroll-mt-24">
         <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
           Collaboration Features
@@ -283,7 +288,6 @@ function TermsContent() {
 
       <Divider />
 
-      {/* ACCEPTABLE USE */}
       <section id="acceptable-use" className="mb-16 scroll-mt-24">
         <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Acceptable Use</h2>
 
@@ -303,7 +307,6 @@ function TermsContent() {
 
       <Divider />
 
-      {/* AVAILABILITY */}
       <section id="availability" className="mb-16 scroll-mt-24">
         <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
           Service Availability
@@ -324,7 +327,6 @@ function TermsContent() {
 
       <Divider />
 
-      {/* LIABILITY */}
       <section id="liability" className="mb-16 scroll-mt-24">
         <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
           Limitations of Liability
@@ -343,7 +345,6 @@ function TermsContent() {
 
       <Divider />
 
-      {/* TERMINATION */}
       <section id="termination" className="mb-16 scroll-mt-24">
         <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
           Account Termination
@@ -362,7 +363,6 @@ function TermsContent() {
 
       <Divider />
 
-      {/* LAW */}
       <section id="law" className="mb-16 scroll-mt-24">
         <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
           Governing Law
@@ -375,7 +375,6 @@ function TermsContent() {
 
       <Divider />
 
-      {/* CHANGES */}
       <section id="changes" className="mb-16 scroll-mt-24">
         <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
           Changes to Terms
@@ -388,7 +387,6 @@ function TermsContent() {
 
       <Divider />
 
-      {/* CONTACT */}
       <section id="contact" className="mb-16 scroll-mt-24">
         <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Contact Us</h2>
 
@@ -417,7 +415,7 @@ function Divider() {
   );
 }
 
-function ListItem({ children }: { children: React.ReactNode }) {
+function ListItem({ children }: { children: ReactNode }) {
   return (
     <li className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
       <Dot className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />

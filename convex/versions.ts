@@ -1,9 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-/**
- * Create a version snapshot of a document
- */
+
 export const create = mutation({
   args: {
     documentId: v.id("documents"),
@@ -18,7 +16,6 @@ export const create = mutation({
       throw new ConvexError("Unauthorized");
     }
 
-    // Verify user has access to the document
     const document = await ctx.db.get(args.documentId);
     if (!document) {
       throw new ConvexError("Document not found");
@@ -44,9 +41,7 @@ export const create = mutation({
   },
 });
 
-/**
- * Get all versions for a document, ordered by creation time (newest first)
- */
+
 export const getByDocumentId = query({
   args: { documentId: v.id("documents") },
   handler: async (ctx, args) => {
@@ -56,7 +51,6 @@ export const getByDocumentId = query({
       throw new ConvexError("Unauthorized");
     }
 
-    // Verify user has access to the document
     const document = await ctx.db.get(args.documentId);
     if (!document) {
       throw new ConvexError("Document not found");
@@ -69,7 +63,7 @@ export const getByDocumentId = query({
     );
 
     if (!isOwner && !isOrganizationMember) {
-      // Check if user has any explicit permission (viewer, commenter, or editor)
+
       const userPermission = await ctx.db
         .query("permissions")
         .withIndex("by_document_user", (q) =>
@@ -78,21 +72,16 @@ export const getByDocumentId = query({
         .first();
 
       if (!userPermission) {
-        // If no explicit permission, check if document has active share links
-        // This allows users accessing via share links to view versions
-        // (version history is read-only, so this is safe)
+
         const shareLinks = await ctx.db
           .query("shareLinks")
           .withIndex("by_document_id", (q) => q.eq("documentId", args.documentId))
           .collect();
 
-        // Check if any share link is active (not expired)
         const hasActiveShareLink = shareLinks.some(
           (link) => !link.expiresAt || link.expiresAt > Date.now()
         );
 
-        // Instead of throwing, return empty array when share link is deleted/expired
-        // This prevents the error from crashing the UI
         if (!hasActiveShareLink) {
           return [];
         }
@@ -111,9 +100,6 @@ export const getByDocumentId = query({
   },
 });
 
-/**
- * Get a specific version by ID
- */
 export const getById = query({
   args: { id: v.id("versions") },
   handler: async (ctx, args) => {
@@ -128,7 +114,6 @@ export const getById = query({
       throw new ConvexError("Version not found");
     }
 
-    // Verify user has access to the document
     const document = await ctx.db.get(version.documentId);
     if (!document) {
       throw new ConvexError("Document not found");
@@ -141,7 +126,7 @@ export const getById = query({
     );
 
     if (!isOwner && !isOrganizationMember) {
-      // Check if user has any explicit permission (viewer, commenter, or editor)
+
       const userPermission = await ctx.db
         .query("permissions")
         .withIndex("by_document_user", (q) =>
@@ -150,21 +135,16 @@ export const getById = query({
         .first();
 
       if (!userPermission) {
-        // If no explicit permission, check if document has active share links
-        // This allows users accessing via share links to view versions
-        // (version history is read-only, so this is safe)
+
         const shareLinks = await ctx.db
           .query("shareLinks")
           .withIndex("by_document_id", (q) => q.eq("documentId", version.documentId))
           .collect();
 
-        // Check if any share link is active (not expired)
         const hasActiveShareLink = shareLinks.some(
           (link) => !link.expiresAt || link.expiresAt > Date.now()
         );
 
-        // Instead of throwing, return null when share link is deleted/expired
-        // This prevents the error from crashing the UI
         if (!hasActiveShareLink) {
           throw new ConvexError("Unauthorized");
         }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, ErrorInfo, Component, ReactNode } from "react";
+import { useState, Component, ReactNode } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { useSearchParams } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
@@ -16,7 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { HistoryIcon, RotateCcwIcon, CheckIcon } from "lucide-react";
+import { HistoryIcon, RotateCcwIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useEditorStore } from "@/store/use-editor-store";
 
@@ -39,7 +39,7 @@ class VersionHistoryErrorBoundary extends Component<
     return { hasError: true };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(error: Error) {
     // Suppress the error from showing in the error overlay
     console.warn("Version history error caught:", error.message);
   }
@@ -52,7 +52,7 @@ class VersionHistoryErrorBoundary extends Component<
             <>
               <p className="text-red-600 font-medium">Share link expired or deleted</p>
               <p className="text-sm text-gray-500">
-                The share link you're using is no longer valid. Please contact the document owner for a new link.
+                The share link you&rsquo;re using is no longer valid. Please contact the document owner for a new link.
               </p>
             </>
           ) : (
@@ -99,7 +99,7 @@ function VersionHistoryContent({ documentId, documentTitle }: VersionHistoryProp
       // Check if it's an authorization error
       const errorMessage = error instanceof Error ? error.message : String(error);
       if (errorMessage.includes("Unauthorized") || errorMessage.includes("unauthorized")) {
-        toast.error("Permission denied: You don't have permission to create versions");
+        toast.error("Permission denied: You don&rsquo;t have permission to create versions");
       } else {
         toast.error("Failed to create version");
       }
@@ -123,6 +123,7 @@ function VersionHistoryContent({ documentId, documentTitle }: VersionHistoryProp
       toast.success("Version restored");
       setIsOpen(false);
     } catch (error) {
+      console.error(error);
       toast.error("Failed to restore version");
     }
   };
@@ -156,7 +157,7 @@ function VersionHistoryContent({ documentId, documentTitle }: VersionHistoryProp
                         Share link expired or deleted
                       </p>
                       <p className="text-sm text-gray-500">
-                        The share link you're using is no longer valid. Please contact the document owner for a new link.
+                        The share link you&rsquo;re using is no longer valid. Please contact the document owner for a new link.
                       </p>
                     </>
                   ) : (
@@ -201,7 +202,7 @@ function VersionHistoryContent({ documentId, documentTitle }: VersionHistoryProp
                     Share link expired or deleted
                   </p>
                   <p className="text-sm text-gray-500">
-                    The share link you're using is no longer valid. Please contact the document owner for a new link.
+                    The share link you&rsquo;re using is no longer valid. Please contact the document owner for a new link.
                   </p>
                 </div>
               ) : (

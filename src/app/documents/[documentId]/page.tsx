@@ -1,7 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { preloadQuery } from "convex/nextjs";
 import { ConvexHttpClient } from "convex/browser";
-import { redirect } from "next/navigation";
 
 import { Document } from "./document";
 import { Id } from "../../../../convex/_generated/dataModel";

@@ -1,9 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-/**
- * Create a folder
- */
+
 export const create = mutation({
   args: {
     name: v.string(),
@@ -27,9 +25,7 @@ export const create = mutation({
   },
 });
 
-/**
- * Get all folders for the current user
- */
+
 export const get = query({
   args: {},
   handler: async (ctx) => {
@@ -55,9 +51,7 @@ export const get = query({
   },
 });
 
-/**
- * Delete a folder
- */
+
 export const remove = mutation({
   args: { id: v.id("folders") },
   handler: async (ctx, args) => {

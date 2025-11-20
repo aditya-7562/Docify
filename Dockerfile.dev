@@ -1,16 +1,13 @@
-# Development Dockerfile for Docify (Next.js only)
+
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Useful utilities for troubleshooting inside the container
 RUN apk add --no-cache bash git curl
 
-# Install dependencies once during build for remote dev deploys
 COPY package*.json ./
 RUN npm ci
 
-# Copy the full workspace so the image is self-contained
 COPY . .
 
 ENV NODE_ENV=development \

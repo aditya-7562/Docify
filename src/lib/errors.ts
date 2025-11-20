@@ -1,7 +1,4 @@
-/**
- * Centralized error handling system
- * Provides custom error classes and error logging utilities
- */
+
 
 export enum ErrorCode {
   UNAUTHORIZED = "UNAUTHORIZED",
@@ -21,9 +18,6 @@ export interface ErrorDetails {
   context?: Record<string, unknown>;
 }
 
-/**
- * Base application error class
- */
 export class AppError extends Error {
   public readonly code: ErrorCode;
   public readonly statusCode: number;
@@ -38,7 +32,7 @@ export class AppError extends Error {
     this.context = details.context;
     this.originalError = details.originalError;
 
-    // Maintains proper stack trace for where our error was thrown (only available on V8)
+
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
     }
@@ -55,9 +49,6 @@ export class AppError extends Error {
   }
 }
 
-/**
- * Unauthorized error (401)
- */
 export class UnauthorizedError extends AppError {
   constructor(message = "Unauthorized", context?: Record<string, unknown>) {
     super({
@@ -69,9 +60,6 @@ export class UnauthorizedError extends AppError {
   }
 }
 
-/**
- * Forbidden error (403)
- */
 export class ForbiddenError extends AppError {
   constructor(message = "Forbidden", context?: Record<string, unknown>) {
     super({
@@ -83,9 +71,7 @@ export class ForbiddenError extends AppError {
   }
 }
 
-/**
- * Not found error (404)
- */
+
 export class NotFoundError extends AppError {
   constructor(message = "Resource not found", context?: Record<string, unknown>) {
     super({
@@ -97,9 +83,7 @@ export class NotFoundError extends AppError {
   }
 }
 
-/**
- * Validation error (400)
- */
+
 export class ValidationError extends AppError {
   constructor(
     message = "Validation failed",
@@ -114,9 +98,6 @@ export class ValidationError extends AppError {
   }
 }
 
-/**
- * Rate limit error (429)
- */
 export class RateLimitError extends AppError {
   constructor(message = "Rate limit exceeded", context?: Record<string, unknown>) {
     super({
@@ -128,19 +109,12 @@ export class RateLimitError extends AppError {
   }
 }
 
-/**
- * Error logger interface
- */
 export interface ErrorLogger {
   error(error: Error | AppError, context?: Record<string, unknown>): void;
   warn(message: string, context?: Record<string, unknown>): void;
   info(message: string, context?: Record<string, unknown>): void;
 }
 
-/**
- * Simple console-based error logger
- * Can be replaced with a service like Sentry in production
- */
 class ConsoleErrorLogger implements ErrorLogger {
   error(error: Error | AppError, context?: Record<string, unknown>): void {
     const errorData = {
@@ -168,15 +142,8 @@ class ConsoleErrorLogger implements ErrorLogger {
   }
 }
 
-/**
- * Global error logger instance
- * Replace with production logger (e.g., Sentry) in production
- */
 export const logger: ErrorLogger = new ConsoleErrorLogger();
 
-/**
- * Handle and log errors consistently
- */
 export function handleError(error: unknown, context?: Record<string, unknown>): AppError {
   if (error instanceof AppError) {
     logger.error(error, context);
@@ -204,9 +171,6 @@ export function handleError(error: unknown, context?: Record<string, unknown>): 
   return appError;
 }
 
-/**
- * Create API error response
- */
 export function createErrorResponse(error: AppError): Response {
   return Response.json(
     {

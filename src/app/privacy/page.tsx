@@ -1,11 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/app/(home)/navbar";
 import { ChevronRight, Dot, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+type TocSection = { id: string; title: string };
+
+const PRIVACY_SECTIONS: TocSection[] = [
+  { id: "intro", title: "Introduction" },
+  { id: "what-we-collect", title: "What We Collect" },
+  { id: "how-we-use", title: "How We Use Data" },
+  { id: "sharing", title: "Information Sharing" },
+  { id: "security", title: "Security Measures" },
+  { id: "your-rights", title: "Your Rights" },
+  { id: "retention", title: "Data Retention" },
+  { id: "children", title: "Children’s Privacy" },
+  { id: "changes", title: "Policy Changes" },
+  { id: "contact", title: "Contact Us" },
+];
 
 export default function PrivacyPolicy() {
   const currentDate = new Date().toLocaleDateString("en-US", {
@@ -17,18 +32,7 @@ export default function PrivacyPolicy() {
   const [activeSection, setActiveSection] = useState<string>("");
   const [isMobileTOCOpen, setIsMobileTOCOpen] = useState(false);
 
-  const sections = [
-    { id: "intro", title: "Introduction" },
-    { id: "what-we-collect", title: "What We Collect" },
-    { id: "how-we-use", title: "How We Use Data" },
-    { id: "sharing", title: "Information Sharing" },
-    { id: "security", title: "Security Measures" },
-    { id: "your-rights", title: "Your Rights" },
-    { id: "retention", title: "Data Retention" },
-    { id: "children", title: "Children's Privacy" },
-    { id: "changes", title: "Policy Changes" },
-    { id: "contact", title: "Contact Us" },
-  ];
+  const sections = PRIVACY_SECTIONS;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,7 +50,7 @@ export default function PrivacyPolicy() {
     window.addEventListener("scroll", handleScroll);
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [sections]);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -65,22 +69,17 @@ export default function PrivacyPolicy() {
 
   return (
     <div className="flex-1 flex flex-col bg-white dark:bg-gray-900 min-h-screen">
-      {/* Header */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <Navbar />
       </div>
 
       <main className="mt-14 flex-1">
-        {/* Hero Section */}
         <HeroPrivacyHeader currentDate={currentDate} />
 
-        {/* Subtle gradient border */}
         <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
 
-        {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12">
           <div className="flex flex-col lg:flex-row gap-10 lg:gap-12">
-            {/* Table of Contents Sidebar */}
             <PrivacySidebarTOC
               sections={sections}
               activeSection={activeSection}
@@ -89,7 +88,6 @@ export default function PrivacyPolicy() {
               setIsMobileTOCOpen={setIsMobileTOCOpen}
             />
 
-            {/* Content */}
             <div className="flex-1 lg:max-w-[800px]">
               <PrivacyContent />
             </div>
@@ -97,13 +95,11 @@ export default function PrivacyPolicy() {
         </div>
       </main>
 
-      {/* Footer */}
       
     </div>
   );
 }
 
-// Hero Header Component
 function HeroPrivacyHeader({ currentDate }: { currentDate: string }) {
   return (
     <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
@@ -142,7 +138,6 @@ function HeroPrivacyHeader({ currentDate }: { currentDate: string }) {
   );
 }
 
-// Table of Contents Sidebar
 function PrivacySidebarTOC({
   sections,
   activeSection,
@@ -150,7 +145,7 @@ function PrivacySidebarTOC({
   isMobileTOCOpen,
   setIsMobileTOCOpen,
 }: {
-  sections: { id: string; title: string }[];
+  sections: TocSection[];
   activeSection: string;
   scrollToSection: (id: string) => void;
   isMobileTOCOpen: boolean;
@@ -158,7 +153,6 @@ function PrivacySidebarTOC({
 }) {
   return (
     <>
-      {/* Mobile TOC Button */}
       <div className="lg:hidden mb-6">
         <Button
           variant="outline"
@@ -177,7 +171,6 @@ function PrivacySidebarTOC({
         </Button>
       </div>
 
-      {/* Desktop Sticky Sidebar */}
       <aside className="hidden lg:block w-64 flex-shrink-0">
         <div className="sticky top-24">
           <nav className="space-y-1">
@@ -204,7 +197,6 @@ function PrivacySidebarTOC({
         </div>
       </aside>
 
-      {/* Mobile TOC Dropdown */}
       {isMobileTOCOpen && (
         <div className="lg:hidden mb-6 border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900 p-4 transition-all duration-200">
           <nav className="space-y-1">
@@ -234,18 +226,16 @@ function PrivacySidebarTOC({
   );
 }
 
-// Main Content Component
 function PrivacyContent() {
   return (
     <article className="prose prose-gray dark:prose-invert max-w-none">
-      {/* Introduction */}
       <section
         id="intro"
         className="mb-16 scroll-mt-24"
       >
         <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
           <p className="text-lg">
-            Docify ("we", "our", "us") provides a collaborative document editing
+            Docify (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;) provides a collaborative document editing
             platform.
           </p>
           <p>
@@ -258,10 +248,8 @@ function PrivacyContent() {
         </div>
       </section>
 
-      {/* Section Divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent my-12" />
 
-      {/* What We Collect */}
       <section
         id="what-we-collect"
         className="mb-16 scroll-mt-24"
@@ -346,10 +334,8 @@ function PrivacyContent() {
         </div>
       </section>
 
-      {/* Section Divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent my-12" />
 
-      {/* How We Use Data */}
       <section
         id="how-we-use"
         className="mb-16 scroll-mt-24"
@@ -373,10 +359,8 @@ function PrivacyContent() {
         </p>
       </section>
 
-      {/* Section Divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent my-12" />
 
-      {/* Information Sharing */}
       <section
         id="sharing"
         className="mb-16 scroll-mt-24"
@@ -403,10 +387,8 @@ function PrivacyContent() {
         </p>
       </section>
 
-      {/* Section Divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent my-12" />
 
-      {/* Security Measures */}
       <section
         id="security"
         className="mb-16 scroll-mt-24"
@@ -430,10 +412,8 @@ function PrivacyContent() {
         </p>
       </section>
 
-      {/* Section Divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent my-12" />
 
-      {/* Your Rights */}
       <section
         id="your-rights"
         className="mb-16 scroll-mt-24"
@@ -464,10 +444,8 @@ function PrivacyContent() {
         </p>
       </section>
 
-      {/* Section Divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent my-12" />
 
-      {/* Data Retention */}
       <section
         id="retention"
         className="mb-16 scroll-mt-24"
@@ -489,16 +467,14 @@ function PrivacyContent() {
         </ul>
       </section>
 
-      {/* Section Divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent my-12" />
 
-      {/* Children's Privacy */}
       <section
         id="children"
         className="mb-16 scroll-mt-24"
       >
         <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
-          Children's Privacy
+          Children&rsquo;s Privacy
         </h2>
         <p className="mb-3 text-gray-700 dark:text-gray-300">
           Docify is not intended for users under 13.
@@ -508,10 +484,8 @@ function PrivacyContent() {
         </p>
       </section>
 
-      {/* Section Divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent my-12" />
 
-      {/* Policy Changes */}
       <section
         id="changes"
         className="mb-16 scroll-mt-24"
@@ -527,10 +501,8 @@ function PrivacyContent() {
         </p>
       </section>
 
-      {/* Section Divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent my-12" />
 
-      {/* Contact Us */}
       <section
         id="contact"
         className="mb-16 scroll-mt-24"
@@ -558,8 +530,7 @@ function PrivacyContent() {
   );
 }
 
-// Custom List Item Component with Icon
-function ListItem({ children }: { children: React.ReactNode }) {
+function ListItem({ children }: { children: ReactNode }) {
   return (
     <li className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
       <Dot className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />

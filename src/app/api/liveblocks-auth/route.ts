@@ -57,7 +57,6 @@ export async function POST(req: Request) {
 
     const { room, token } = validationResult.data as LiveblocksAuthRequest & { token?: string };
 
-    // ---- Fetch Document ----
     let document;
     try {
       document = await convex.query(api.documents.getById, { id: room });
@@ -70,10 +69,8 @@ export async function POST(req: Request) {
       throw new NotFoundError("Document not found", { room });
     }
 
-    // ---- Permission Check ----
     const isOwner = document.ownerId === user.id;
 
-    // Clerk org lives under sessionClaims.o.id, not sessionClaims.org_id
     const typedSessionClaims = sessionClaims as ClerkSessionClaims;
     const clerkOrgId = typedSessionClaims.o?.id;
     const isOrganizationMember =
@@ -81,21 +78,20 @@ export async function POST(req: Request) {
       !!clerkOrgId &&
       document.organizationId === clerkOrgId;
 
-    // Check share link if user is not owner or org member
     let hasShareLinkAccess = false;
     let shareLinkRole: "viewer" | "commenter" | "editor" | null = null;
     if (!isOwner && !isOrganizationMember && token) {
       try {
         const shareLink = await convex.query(api.shareLinks.getByToken, { token });
         if (shareLink && shareLink.documentId === room) {
-          // Check if expired
+
           if (!shareLink.expiresAt || shareLink.expiresAt > Date.now()) {
             hasShareLinkAccess = true;
             shareLinkRole = shareLink.role;
           }
         }
       } catch (error) {
-        // Share link not found or invalid - continue to check other permissions
+
         logger.warn("Share link validation failed", { token, error });
       }
     }
@@ -108,7 +104,6 @@ export async function POST(req: Request) {
       });
     }
 
-    // ---- Liveblocks Session ----
     const name =
       user.fullName ??
       user.primaryEmailAddress?.emailAddress ??
@@ -128,28 +123,24 @@ export async function POST(req: Request) {
       },
     });
 
-    // Grant permissions based on role
-    // Owner and org members get full access
-    // Share link users get access based on their role
+
     if (isOwner || isOrganizationMember) {
       session.allow(room, session.FULL_ACCESS);
     } else if (shareLinkRole === "editor") {
       session.allow(room, session.FULL_ACCESS);
     } else if (shareLinkRole === "commenter") {
-      // Commenters can read, see presence, and write comments, but not edit the document
+
       session.allow(room, ["room:read", "room:presence:write", "comments:write"] as const);
     } else if (shareLinkRole === "viewer") {
-      // Viewers can only read (no editing, no commenting)
+
       session.allow(room, session.READ_ACCESS);
     } else {
-      // Default to read-only for safety
+
       session.allow(room, session.READ_ACCESS);
     }
 
-    // Liveblocks expects raw body + status, NOT JSON wrapped
     const { body: responseBody, status } = await session.authorize();
 
-    // Return response with proper Content-Type header for JSON
     return new Response(responseBody, {
       status,
       headers: {
@@ -162,12 +153,10 @@ export async function POST(req: Request) {
       method: "POST",
     });
 
-    // If it's already an AppError with proper status, return JSON response
     if (appError.statusCode !== 500) {
       return createErrorResponse(appError);
     }
 
-    // For internal errors, log but don't expose details
     logger.error(appError, { endpoint: "/api/liveblocks-auth" });
     return Response.json(
       { error: { code: appError.code, message: "Internal server error" } },

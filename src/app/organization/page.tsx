@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Building2Icon, UserPlusIcon, UsersIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,20 +30,12 @@ export default function OrganizationPage() {
   const [isInviting, setIsInviting] = useState(false);
   const [organizationName, setOrganizationName] = useState<string | null>(null);
 
-  // Get organization from user's organization memberships
+
   const organizationId = user?.organizationMemberships?.[0]?.organization?.id;
   const membership = user?.organizationMemberships?.[0];
+  const organization = membership?.organization;
 
-  useEffect(() => {
-    if (organizationId) {
-      loadMembers();
-      loadOrganizationName();
-    } else {
-      setIsLoading(false);
-    }
-  }, [organizationId]);
-
-  const loadMembers = async () => {
+  const loadMembers = useCallback(async () => {
     if (!organizationId) return;
     
     setIsLoading(true);
@@ -56,22 +48,30 @@ export default function OrganizationPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [organizationId]);
 
-  const loadOrganizationName = async () => {
+  const loadOrganizationName = useCallback(async () => {
     if (!organizationId) return;
     
     try {
       const name = await getOrganizationName(organizationId);
       setOrganizationName(name);
     } catch (error) {
-      // Fallback to organization name from Clerk hook
       if (organization?.name) {
         setOrganizationName(organization.name);
       }
       console.error(error);
     }
-  };
+  }, [organizationId, organization?.name]);
+
+  useEffect(() => {
+    if (organizationId) {
+      loadMembers();
+      loadOrganizationName();
+    } else {
+      setIsLoading(false);
+    }
+  }, [organizationId, loadMembers, loadOrganizationName]);
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,10 +82,11 @@ export default function OrganizationPage() {
       await inviteToOrganization(organizationId, email);
       toast.success(`Invitation sent to ${email}`);
       setEmail("");
-      // Reload members to show pending invitations if applicable
+
       await loadMembers();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to send invitation");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to send invitation";
+      toast.error(message);
     } finally {
       setIsInviting(false);
     }
@@ -102,8 +103,9 @@ export default function OrganizationPage() {
       await removeFromOrganization(organizationId, userId);
       toast.success(`${userName} removed from organization`);
       await loadMembers();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to remove member");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to remove member";
+      toast.error(message);
     }
   };
 
@@ -128,7 +130,7 @@ export default function OrganizationPage() {
   }
 
   const currentUserRole = membership?.role || "member";
-  // In Clerk, admin roles are typically "org:admin" or "admin"
+
   const canInvite = currentUserRole === "admin" || currentUserRole === "org:admin" || currentUserRole === "org_admin";
   const canRemove = currentUserRole === "admin" || currentUserRole === "org:admin" || currentUserRole === "org_admin";
 
@@ -159,7 +161,7 @@ export default function OrganizationPage() {
             </Card>
           )}
 
-          {/* Invite Section */}
+
           {canInvite && (
             <Card className="mb-6">
               <CardHeader>
@@ -195,7 +197,6 @@ export default function OrganizationPage() {
             </Card>
           )}
 
-          {/* Members List */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">

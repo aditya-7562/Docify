@@ -13,7 +13,7 @@ interface ErrorPageProps {
 
 const ErrorPage = ({ error, reset }: ErrorPageProps) => {
   useEffect(() => {
-    // Log error to error tracking service
+
     logger.error(error, {
       digest: error.digest,
       component: "ErrorBoundary",

@@ -2,6 +2,7 @@
 
 import { ClientSideSuspense } from "@liveblocks/react";
 import { useOthers, useSelf } from "@liveblocks/react/suspense";
+import Image from "next/image";
 
 export const Avatars = () => {
   return (
@@ -23,19 +24,22 @@ const AvatarStack = () => {
 
   return (
     <div className="flex -space-x-3">
-      {displayUsers.map((user, index) => {
+      {displayUsers.map((user) => {
         const isCurrentUser = user === currentUser;
         const info = isCurrentUser ? currentUser.info : (user as typeof users[0]).info;
         const name = isCurrentUser ? "You" : info.name;
         const key = isCurrentUser ? "current-user" : (user as typeof users[0]).connectionId;
         
         return (
-          <img
+          <Image
             key={key}
             src={info.avatar}
             alt={name}
+            width={32}
+            height={32}
             className="w-8 h-8 rounded-full ring-2 ring-white shadow-sm hover:scale-105 transition-transform"
             title={name}
+            unoptimized
           />
         );
       })}

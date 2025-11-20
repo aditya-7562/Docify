@@ -56,6 +56,7 @@ export function ShareDialog({ documentId }: ShareDialogProps) {
       toast.success("Share link created");
       setExpiresInDays("");
     } catch (error) {
+      console.error(error);
       toast.error("Failed to create share link");
     }
   };
@@ -71,6 +72,7 @@ export function ShareDialog({ documentId }: ShareDialogProps) {
       await deleteShareLink({ id: linkId });
       toast.success("Share link deleted");
     } catch (error) {
+      console.error(error);
       toast.error("Failed to delete share link");
     }
   };

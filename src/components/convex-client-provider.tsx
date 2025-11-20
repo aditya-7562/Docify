@@ -13,7 +13,7 @@ function SignInWrapper() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  // Preserve the current URL including query params (like share token)
+
   const redirectUrl = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
   
   return (

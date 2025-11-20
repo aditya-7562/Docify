@@ -13,7 +13,7 @@ export const Footer = () => {
         relative
       "
     >
-      {/* Subtle top shadow for depth */}
+
       <div className="absolute inset-x-0 top-0 h-px bg-gray-200/60 dark:bg-gray-800/60" />
 
       <div
@@ -26,7 +26,7 @@ export const Footer = () => {
           text-gray-600 dark:text-gray-400
         "
       >
-        {/* Left */}
+
         <div className="flex items-center gap-2">
           <span className="font-medium text-gray-700 dark:text-gray-300">
             © {currentYear} Docify
@@ -39,7 +39,7 @@ export const Footer = () => {
           </span>
         </div>
 
-        {/* Right */}
+
         <div className="flex items-center gap-3">
           <FooterLink label="Privacy" href="/privacy" />
           <FooterSeparator />
